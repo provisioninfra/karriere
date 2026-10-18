@@ -41,6 +41,18 @@ SKIP_IMAGES = {"button-unlocked.svg", "favicon-32.png", "favicon-192.png", "appl
 TITLE_PREFIX = "Karriere – "
 
 
+async def rest(ctx, method, url, retries=5, **kw):
+    """REST-Aufruf mit Backoff bei 429/503 (Hoster-Ratenlimit)."""
+    for i in range(retries):
+        r = await getattr(ctx.request, method)(url, **kw)
+        if r.status not in (429, 503):
+            return r
+        wait = 15 * (i + 1)
+        print(f"  Ratenlimit ({r.status}), warte {wait}s ...")
+        await asyncio.sleep(wait)
+    return r
+
+
 def eid():
     return "".join(random.choice(string.hexdigits.lower()) for _ in range(7))
 
@@ -86,12 +98,12 @@ async def main():
         if "wp-login.php" in page.url:
             err = await page.locator("#login_error").all_inner_texts()
             sys.exit("Login fehlgeschlagen (Seite blieb auf wp-login.php). Meldung: " + " | ".join(t.strip() for t in err)[:300])
-        r = await ctx.request.get(f"{BASE}/wp-admin/admin-ajax.php?action=rest-nonce")
+        r = await rest(ctx, "get", f"{BASE}/wp-admin/admin-ajax.php?action=rest-nonce")
         nonce = (await r.text()).strip()
         if not re.fullmatch(r"[0-9a-f]{10}", nonce):
             sys.exit("Keine REST-Nonce erhalten.")
         H = {"X-WP-Nonce": nonce}
-        r = await ctx.request.get(f"{BASE}/wp-json/wp/v2/users/me?context=edit", headers=H)
+        r = await rest(ctx, "get", f"{BASE}/wp-json/wp/v2/users/me?context=edit", headers=H)
         if r.status != 200 or not (await r.text()).lstrip().startswith("{"):
             body = (await r.text())[:400]
             sys.exit(f"REST-Zugriff fehlgeschlagen: HTTP {r.status}, Content-Type {r.headers.get('content-type')}, Anfang: {body!r}")
@@ -99,7 +111,7 @@ async def main():
         print("Angemeldet, Rollen:", me.get("roles"))
 
         # 2) Slug-Check (nur lesen)
-        r = await ctx.request.get(f"{BASE}/wp-json/wp/v2/pages?slug=karriere&status=publish,draft,pending,private,future&context=edit", headers=H)
+        r = await rest(ctx, "get", f"{BASE}/wp-json/wp/v2/pages?slug=karriere&status=publish,draft,pending,private,future&context=edit", headers=H)
         existing = await r.json()
         if existing:
             print("Hinweis: Es existiert bereits eine Seite mit Slug 'karriere':",
@@ -112,7 +124,8 @@ async def main():
             if f.name in SKIP_IMAGES or f.name in media_map:
                 continue
             mime = mimetypes.guess_type(f.name)[0] or "application/octet-stream"
-            r = await ctx.request.post(
+            await asyncio.sleep(1.5)
+            r = await rest(ctx, "post",
                 f"{BASE}/wp-json/wp/v2/media",
                 headers=H,
                 multipart={
@@ -125,28 +138,34 @@ async def main():
                 sys.exit(f"Upload fehlgeschlagen für {f.name}: {r.status} {await r.text()}")
             j = await r.json()
             media_map[f.name] = j["source_url"]
-            print("hochgeladen:", f.name, "->", j["source_url"])
-        MAP_FILE.write_text(json.dumps(media_map, indent=2, ensure_ascii=False) + "\n")
+            MAP_FILE.write_text(json.dumps(media_map, indent=2, ensure_ascii=False) + "\n")
+            print("hochgeladen:", f.name, "->", j["source_url"], flush=True)
 
         # 4) Bundle bauen
         subprocess.run([sys.executable, str(ROOT / "tools/build_wordpress_bundle.py")], check=True)
         bundle = (DIST / "karriere-wordpress.html").read_text(encoding="utf-8")
 
-        # 5) Seite als Entwurf anlegen
-        r = await ctx.request.post(
-            f"{BASE}/wp-json/wp/v2/pages", headers=H,
-            data={"title": "Karriere", "slug": "karriere", "status": "draft",
-                  "template": "elementor_canvas", "content": "",
-                  "excerpt": "Karriere bei ProVision Infra: Servicetechniker, IT-Projekttechniker und Kundenberater (m/w/d)."},
-        )
-        if r.status not in (200, 201):
-            sys.exit(f"Seite konnte nicht angelegt werden: {r.status} {await r.text()}")
-        pg = await r.json()
-        post_id = pg["id"]
-        print("Entwurf angelegt: ID", post_id, "Slug", pg["slug"], "Template", pg.get("template"))
+        # 5) Eigenen Entwurf wiederverwenden oder neu anlegen (nie fremde/veröffentlichte Seiten anfassen)
+        own = [e for e in existing if e.get("status") == "draft" and e.get("author") == me.get("id")]
+        if own:
+            pg = own[0]; post_id = pg["id"]
+            print("Eigener Entwurf vorhanden, wird aktualisiert: ID", post_id, flush=True)
+        else:
+            r = await rest(ctx, "post",
+                f"{BASE}/wp-json/wp/v2/pages", headers=H,
+                data={"title": "Karriere", "slug": "karriere", "status": "draft",
+                      "template": "elementor_canvas", "content": "",
+                      "excerpt": "Karriere bei ProVision Infra: Servicetechniker, IT-Projekttechniker und Kundenberater (m/w/d)."},
+            )
+            if r.status not in (200, 201):
+                sys.exit(f"Seite konnte nicht angelegt werden: {r.status} {await r.text()}")
+            pg = await r.json()
+            post_id = pg["id"]
+            print("Entwurf angelegt: ID", post_id, "Slug", pg["slug"], "Template", pg.get("template"), flush=True)
 
         # 6) Elementor-Inhalt speichern (im Editor der NEUEN Seite)
         await page.goto(f"{BASE}/wp-admin/post.php?post={post_id}&action=elementor", wait_until="domcontentloaded")
+        print("Elementor-Editor wird geladen ...", flush=True)
         await page.wait_for_function("() => window.elementor && window.elementorCommon && elementorCommon.ajax", timeout=120000)
         await page.wait_for_function("() => window.elementor.documents && elementor.documents.getCurrent && elementor.documents.getCurrent()", timeout=120000)
         await page.wait_for_timeout(3000)
@@ -165,7 +184,7 @@ async def main():
         print("Elementor-Inhalt gespeichert.")
 
         # Kontrolle: Seite neu lesen
-        r = await ctx.request.get(f"{BASE}/wp-json/wp/v2/pages/{post_id}?context=edit", headers=H)
+        r = await rest(ctx, "get", f"{BASE}/wp-json/wp/v2/pages/{post_id}?context=edit", headers=H)
         pg = await r.json()
         preview = pg.get("link") + ("&" if "?" in pg["link"] else "?") + "preview=true"
         print("Status:", pg["status"], "| Template:", pg.get("template"), "| Vorschau:", preview)
