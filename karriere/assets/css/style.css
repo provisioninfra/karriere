@@ -836,3 +836,16 @@ body::before{
 .pe-rating a{color:var(--c-accent);}
 .site-footer__row--bottom{border-top-color:var(--tint-30);}
 .skip-link{background:var(--c-accent);color:#fff;}
+
+/* Buttons und Icons im Navy des früheren Seitenhintergrunds (#000D30) */
+:root{
+  --c-accent:#000D30;
+  --c-accent-light:#000D30;
+  --metal-blue:linear-gradient(135deg,#142554 0%,#000D30 55%,#00081F 100%);
+}
+.filter button.is-active{border-color:rgba(0,13,48,.7);}
+.btn:hover,.btn:focus{box-shadow:0 0 16px 5px rgba(0,13,48,.3),0 8px 22px rgba(0,13,48,.3),inset 0 1px 0 rgba(255,255,255,.35);}
+.nav-menu .nav-cta a:hover{box-shadow:0 0 14px 4px rgba(0,13,48,.35);}
+.feature-card:hover,.job:hover,.job.is-open,.bento__item:hover{box-shadow:0 0 24px rgba(0,13,48,.25);}
+.highlight-card,.highlight-card:hover{box-shadow:0 -5px 25px 5px rgba(0,13,48,.2);}
+.carousel__slide.is-active .testi-card{box-shadow:0 0 24px rgba(0,13,48,.25);}
