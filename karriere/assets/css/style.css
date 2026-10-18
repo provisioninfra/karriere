@@ -99,12 +99,13 @@ strong,b{font-weight:700;}
 .bg{position:absolute;inset:0;pointer-events:none;background-repeat:no-repeat;z-index:0;}
 .bg--blue-center{background-image:url("../img/glow-ellipse-3.png");background-position:center center;background-size:contain;}
 .bg--blue-right{background-image:url("../img/glow-ellipse-3.png");background-position:center right;background-size:45% auto;}
-.bg--blue-topright{background-image:url("../img/glow-ellipse-3.png");background-position:top right;background-size:55% auto;opacity:.8;}
+.bg--blue-topright{background-image:url("../img/glow-ellipse-3.png");background-position:top right;background-size:55% auto;}
 .bg--blue-left{background-image:url("../img/glow-ellipse-4.png");background-position:0 -25px;background-size:40% auto;opacity:.6;}
 .bg--blue-rightside{background-image:url("../img/glow-ellipse-5.png");background-position:center right;background-size:40% auto;}
-.bg--yellow-left{background-image:url("../img/glow-left.png");background-position:center left;background-size:contain;}
+.bg--yellow-left{background-image:url("../img/glow-left.png");background-position:center left;background-size:contain;opacity:.5;}
+.bg--yellow-left.bg--o80{opacity:.8;}
 .bg--yellow-right{background-image:url("../img/glow-right.png");background-position:center right;background-size:contain;mix-blend-mode:screen;}
-.bg--v{background-image:url("../img/glow-frame.webp");background-position:center left;background-size:50% auto;opacity:.5;}
+.bg--v{background-image:url("../img/glow-frame.png");background-position:center left;background-size:50% auto;opacity:.5;}
 .section > .container{z-index:1;}
 
 /* Shade-Up Verlauf oben (wie .shadeup::before im Original) */
