@@ -62,6 +62,14 @@ a{color:inherit;text-decoration:none;}
 h1,h2,h3,h4,p,ul{margin:0;padding:0;}
 ul{list-style:none;}
 button{font-family:inherit;cursor:pointer;background:none;border:0;color:inherit;}
+/* Reset gegen Theme-/Kit-Button-Styles (Hello Elementor, Elementor Kit), falls die Seite in WordPress läuft */
+.site-header button,.site-main button,.site-footer button,
+.site-header button:hover,.site-main button:hover,.site-footer button:hover,
+.site-header button:focus,.site-main button:focus,.site-footer button:focus{
+  background:none;background-color:transparent;background-image:none;border:0;padding:0;margin:0;
+  color:inherit;font:inherit;line-height:inherit;letter-spacing:0;text-transform:none;
+  border-radius:0;box-shadow:none;min-height:0;min-width:0;width:auto;text-decoration:none;
+}
 .skip-link{position:absolute;left:-9999px;top:0;background:var(--c-yellow);color:var(--c-dark);padding:8px 16px;z-index:100000;}
 .skip-link:focus{left:10px;top:10px;}
 
