@@ -175,50 +175,117 @@
   <section class="hero hero--visual">
     <div class="bg bg--blue-rightside"></div>
     <div class="hero__visual" aria-hidden="true">
-      <svg class="access-anim" viewBox="0 0 560 440" xmlns="http://www.w3.org/2000/svg">
+      <svg class="hero-scene" viewBox="0 0 640 520" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="aa-panel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#132554"/><stop offset="1" stop-color="#000D30"/></linearGradient>
-          <linearGradient id="aa-card" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1B2D70"/><stop offset="1" stop-color="#000D30"/></linearGradient>
-          <filter id="aa-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <linearGradient id="sc-fac" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A2E72"/><stop offset="1" stop-color="#000D30"/></linearGradient>
+          <linearGradient id="sc-glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8CE8CC" stop-opacity=".45"/><stop offset="1" stop-color="#FFFFFF" stop-opacity=".08"/></linearGradient>
+          <linearGradient id="sc-van" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#142554"/><stop offset="1" stop-color="#000D30"/></linearGradient>
+          <filter id="sc-shadow" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#000D30" flood-opacity=".28"/></filter>
+          <filter id="sc-glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
         </defs>
-        <!-- Tür / Wand -->
-        <rect x="330" y="20" width="210" height="400" rx="18" fill="#000D30" opacity=".10"/>
-        <!-- Funkwellen -->
-        <g class="aa-waves">
-          <circle class="aa-wave" cx="340" cy="220" r="90" fill="none" stroke="#000D30" stroke-width="3"/>
-          <circle class="aa-wave" cx="340" cy="220" r="90" fill="none" stroke="#000D30" stroke-width="3"/>
-          <circle class="aa-wave" cx="340" cy="220" r="90" fill="none" stroke="#000D30" stroke-width="3"/>
-        </g>
-        <!-- Wandleser -->
-        <g class="aa-reader">
-          <rect x="350" y="100" width="170" height="250" rx="26" fill="url(#aa-panel)"/>
-          <rect x="366" y="116" width="138" height="218" rx="18" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="2"/>
-          <circle class="aa-led" cx="435" cy="142" r="9" fill="#FBC91B"/>
-          <!-- Schloss -->
-          <g class="aa-lock">
-            <path class="aa-shackle" d="M410 226v-28a25 25 0 0 1 50 0v28" fill="none" stroke="#FBC91B" stroke-width="11" stroke-linecap="round"/>
-            <rect class="aa-lockbody" x="396" y="224" width="78" height="62" rx="14" fill="#FBC91B"/>
-            <circle cx="435" cy="250" r="7" fill="#000D30"/>
-            <rect x="432" y="252" width="6" height="16" rx="3" fill="#000D30"/>
+        <g class="sc-scene">
+          <!-- Boden -->
+          <ellipse cx="340" cy="478" rx="300" ry="26" fill="#000D30" opacity=".14"/>
+
+          <!-- Gebäude -->
+          <g class="sc-building">
+            <rect x="240" y="70" width="370" height="400" rx="22" fill="url(#sc-fac)"/>
+            <rect x="240" y="70" width="370" height="400" rx="22" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="2"/>
+            <!-- Firmenschild -->
+            <rect x="330" y="98" width="190" height="36" rx="9" fill="#FBC91B"/>
+            <text x="425" y="122" text-anchor="middle" font-family="Poppins, sans-serif" font-size="15" font-weight="700" fill="#000D30">ProVision Infra</text>
+            <!-- Fenster -->
+            <g fill="url(#sc-glass)" stroke="rgba(255,255,255,.18)" stroke-width="1.5">
+              <rect x="262" y="152" width="54" height="66" rx="6"/><rect x="332" y="152" width="54" height="66" rx="6"/>
+              <rect x="402" y="152" width="54" height="66" rx="6"/><rect x="472" y="152" width="54" height="66" rx="6"/><rect x="542" y="152" width="54" height="66" rx="6"/>
+              <rect x="262" y="252" width="54" height="66" rx="6"/><rect x="332" y="252" width="54" height="66" rx="6"/>
+            </g>
+            <!-- Eingang -->
+            <rect x="404" y="254" width="142" height="216" fill="#050F35"/>
+            <rect x="398" y="248" width="154" height="222" rx="10" fill="none" stroke="#FBC91B" stroke-width="5"/>
+            <g class="sc-door-l">
+              <rect x="406" y="256" width="66" height="212" rx="4" fill="url(#sc-glass)" stroke="rgba(255,255,255,.35)" stroke-width="1.5"/>
+              <rect x="462" y="350" width="4" height="30" rx="2" fill="#FBC91B"/>
+            </g>
+            <g class="sc-door-r">
+              <rect x="478" y="256" width="66" height="212" rx="4" fill="url(#sc-glass)" stroke="rgba(255,255,255,.35)" stroke-width="1.5"/>
+              <rect x="484" y="350" width="4" height="30" rx="2" fill="#FBC91B"/>
+            </g>
+            <!-- Wandleser -->
+            <circle class="sc-wave" cx="367" cy="325" r="40" fill="none" stroke="#FBC91B" stroke-width="2.5"/>
+            <circle class="sc-wave" cx="367" cy="325" r="40" fill="none" stroke="#FBC91B" stroke-width="2.5"/>
+            <rect x="352" y="300" width="30" height="50" rx="7" fill="#000D30" stroke="#FBC91B" stroke-width="2"/>
+            <circle class="sc-led" cx="367" cy="313" r="4.5" fill="#FBC91B"/>
+            <path d="M363 329v-4a4 4 0 0 1 8 0v4" fill="none" stroke="#FBC91B" stroke-width="2"/>
+            <rect x="360" y="329" width="14" height="11" rx="2" fill="#FBC91B"/>
           </g>
-          <!-- Haken -->
-          <path class="aa-check" d="M404 318l20 20 42-42" fill="none" stroke="#8CE8CC" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
-        </g>
-        <!-- Keycard -->
-        <g class="aa-card-in">
-          <g class="aa-card">
-            <rect x="60" y="180" width="200" height="124" rx="16" fill="url(#aa-card)"/>
-            <rect x="60" y="180" width="200" height="124" rx="16" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"/>
-            <rect x="84" y="208" width="44" height="34" rx="6" fill="#FBC91B"/>
-            <path d="M84 225h44M106 208v34" stroke="#000D30" stroke-width="2"/>
-            <rect x="84" y="262" width="110" height="10" rx="5" fill="rgba(255,255,255,.35)"/>
-            <rect x="84" y="280" width="70" height="10" rx="5" fill="rgba(255,255,255,.2)"/>
-            <path d="M206 214a22 22 0 0 1 0 32M218 204a36 36 0 0 1 0 52M230 194a50 50 0 0 1 0 72" fill="none" stroke="#FBC91B" stroke-width="4" stroke-linecap="round"/>
+
+          <!-- Servicefahrzeug -->
+          <g class="sc-van" transform="translate(-20 42)">
+            <path d="M40 420V372a14 14 0 0 1 14-14h96l34-28h28a12 12 0 0 1 12 12v78z" fill="url(#sc-van)"/>
+            <path d="M152 360l32-26h20v26z" fill="url(#sc-glass)"/>
+            <rect x="60" y="368" width="70" height="28" rx="4" fill="url(#sc-glass)"/>
+            <rect x="40" y="402" width="184" height="6" fill="#FBC91B"/>
+            <rect x="218" y="386" width="6" height="12" rx="2" fill="#FBC91B"/>
+            <text x="140" y="392" font-family="Poppins, sans-serif" font-size="9" font-weight="600" fill="#FFFFFF" opacity=".85">ProVision Infra</text>
+            <circle cx="82" cy="421" r="16" fill="#1B2D70" stroke="#000D30" stroke-width="4"/><circle cx="82" cy="421" r="6" fill="#C9D2F0"/>
+            <circle cx="186" cy="421" r="16" fill="#1B2D70" stroke="#000D30" stroke-width="4"/><circle cx="186" cy="421" r="6" fill="#C9D2F0"/>
           </g>
+
+          <!-- Techniker -->
+          <g class="sc-tech">
+            <ellipse cx="302" cy="470" rx="58" ry="9" fill="#000D30" opacity=".2"/>
+            <rect x="276" y="392" width="24" height="74" rx="9" fill="#1B2D70"/>
+            <rect x="304" y="392" width="24" height="74" rx="9" fill="#1B2D70"/>
+            <rect x="270" y="456" width="34" height="14" rx="7" fill="#000D30"/>
+            <rect x="302" y="456" width="34" height="14" rx="7" fill="#000D30"/>
+            <rect x="294" y="268" width="16" height="26" fill="#F1C8A4"/>
+            <rect x="262" y="288" width="80" height="112" rx="24" fill="#000D30"/>
+            <rect x="262" y="338" width="80" height="8" fill="#FBC91B" opacity=".95"/>
+            <rect x="262" y="352" width="80" height="4" fill="#FBC91B" opacity=".5"/>
+            <path d="M294 304l8 16 8-16" fill="none" stroke="#FBC91B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- rechter Arm mit Keycard zum Leser -->
+            <path d="M336 302q24-2 22 22" fill="none" stroke="#000D30" stroke-width="16" stroke-linecap="round"/>
+            <circle cx="356" cy="328" r="8" fill="#F1C8A4"/>
+            <g transform="rotate(-12 350 322)"><rect x="336" y="314" width="26" height="17" rx="3" fill="#FBC91B" stroke="#000D30" stroke-width="1.5"/><rect x="340" y="319" width="7" height="6" rx="1" fill="#000D30"/></g>
+            <!-- linker Arm mit Tablet -->
+            <path d="M268 302q-28 18-22 48" fill="none" stroke="#000D30" stroke-width="16" stroke-linecap="round"/>
+            <g class="sc-tablet" transform="rotate(-8 244 361)" filter="url(#sc-shadow)">
+              <rect x="206" y="334" width="76" height="54" rx="7" fill="#FFFFFF" stroke="#000D30" stroke-width="2.5"/>
+              <rect x="216" y="346" width="38" height="6" rx="3" fill="#000D30" opacity=".85"/>
+              <rect x="216" y="359" width="44" height="5" rx="2.5" fill="#000D30" opacity=".35"/>
+              <rect x="216" y="371" width="40" height="5" rx="2.5" fill="#000D30" opacity=".35"/>
+              <circle cx="270" cy="349" r="6" fill="#8CE8CC"/><path class="sc-check sc-check-1" d="M267 349l2 2 4-4" fill="none" stroke="#000D30" stroke-width="1.8" stroke-linecap="round"/>
+              <circle cx="270" cy="362" r="6" fill="#8CE8CC"/><path class="sc-check sc-check-2" d="M267 362l2 2 4-4" fill="none" stroke="#000D30" stroke-width="1.8" stroke-linecap="round"/>
+              <circle cx="270" cy="375" r="6" fill="none" stroke="#000D30" stroke-width="1.5" opacity=".4"/>
+            </g>
+            <circle cx="246" cy="354" r="8" fill="#F1C8A4"/>
+            <!-- Kopf mit Kappe -->
+            <circle cx="302" cy="250" r="26" fill="#F1C8A4"/>
+            <path d="M276 248c2-18 13-30 26-30s24 12 26 30z" fill="#000D30"/>
+            <rect x="270" y="244" width="64" height="8" rx="4" fill="#000D30"/>
+            <path d="M296 232l6 10 6-10" fill="none" stroke="#FBC91B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+
+          <!-- Statuskarten -->
+          <g transform="translate(24 96)"><g class="sc-badge sc-badge-2" filter="url(#sc-shadow)">
+            <rect width="200" height="56" rx="12" fill="#FFFFFF"/>
+            <circle cx="24" cy="28" r="12" fill="#FBC91B"/><path d="M24 20a6 6 0 0 1 6 6c0 4.5-6 10-6 10s-6-5.5-6-10a6 6 0 0 1 6-6z" fill="#000D30"/>
+            <text x="46" y="24" font-family="Poppins, sans-serif" font-size="11" fill="#000D30" opacity=".6">Einsatz heute</text>
+            <text x="46" y="42" font-family="Poppins, sans-serif" font-size="14" font-weight="600" fill="#000D30">Praxis in Lüneburg</text>
+          </g></g>
+          <g transform="translate(440 150)"><g class="sc-badge sc-badge-1" filter="url(#sc-shadow)">
+            <rect width="166" height="46" rx="12" fill="#FFFFFF"/>
+            <circle cx="23" cy="23" r="11" fill="#8CE8CC"/><path d="M18 23l4 4 7-7" fill="none" stroke="#000D30" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="44" y="28" font-family="Poppins, sans-serif" font-size="14" font-weight="600" fill="#000D30">Zutritt gewährt</text>
+          </g></g>
+          <g transform="translate(436 398)"><g class="sc-badge sc-badge-3" filter="url(#sc-shadow)">
+            <rect width="170" height="56" rx="12" fill="#FFFFFF"/>
+            <rect x="12" y="16" width="24" height="24" rx="6" fill="#FBC91B"/><path d="M18 26h12M24 22v8" stroke="#000D30" stroke-width="2.2" stroke-linecap="round"/>
+            <text x="46" y="26" font-family="Poppins, sans-serif" font-size="13" font-weight="600" fill="#000D30">Projekt übergeben</text>
+            <text x="46" y="43" font-family="Poppins, sans-serif" font-size="11" fill="#000D30" opacity=".6">Kunde bewertet mit 5,0 ★</text>
+          </g></g>
         </g>
-        <!-- Status -->
-        <text class="aa-text aa-text--locked" x="435" y="395" text-anchor="middle" font-family="Poppins, sans-serif" font-size="15" font-weight="600" fill="#000D30">Zutritt gesperrt</text>
-        <text class="aa-text aa-text--open" x="435" y="395" text-anchor="middle" font-family="Poppins, sans-serif" font-size="15" font-weight="600" fill="#000D30">Zutritt gewährt</text>
       </svg>
     </div>
     <div class="hero__inner">

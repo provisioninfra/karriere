@@ -298,7 +298,7 @@
 
   /* ---------- Hero-Animation erneut abspielen (Hover / Tap) ---------- */
   function initHeroAnim() {
-    var svg = document.querySelector('.access-anim');
+    var svg = document.querySelector('.hero-scene');
     var hero = document.querySelector('.hero');
     if (!svg || !hero || prefersReduced) return;
     var busy = false;
