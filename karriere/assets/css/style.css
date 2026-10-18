@@ -62,9 +62,9 @@ a{color:inherit;text-decoration:none;}
 h1,h2,h3,h4,p,ul{margin:0;padding:0;}
 ul{list-style:none;}
 button{font-family:inherit;cursor:pointer;background:none;border:0;color:inherit;}
-/* Reset gegen Theme-Button-Styles (Hello Elementor), falls die Seite in WordPress läuft.
-   :where() hält die Spezifität bei (0,0,1); alle Komponenten-Regeln (button.xyz) gewinnen. */
-:where(.site-header,.site-main,.site-footer) button{
+/* Reset gegen Theme-Button-Styles (Hello Elementor reset.css: [type=button]{border:1px solid #c36 …}).
+   Spezifität (0,1,0): schlägt das Theme per Reihenfolge, verliert gegen alle Komponenten-Regeln (button.xyz). */
+:where(.site-header,.site-main,.site-footer) :is(button,[type="button"],[type="submit"]){
   background:none;border:0;padding:0;margin:0;color:inherit;font:inherit;line-height:inherit;
   letter-spacing:0;text-transform:none;border-radius:0;box-shadow:none;min-height:0;min-width:0;width:auto;text-decoration:none;
 }
@@ -368,7 +368,7 @@ button.carousel__arrow:hover svg{fill:var(--c-dark);}
 button.carousel__arrow--prev{left:50%;margin-left:-38px;transform:translate(-50%,-100%);}
 button.carousel__arrow--next{right:50%;margin-right:-38px;transform:translate(50%,-100%);}
 .carousel__dots{display:flex;justify-content:center;gap:4px;margin-top:2px;position:relative;z-index:3;}
-.carousel__dots button{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.carousel__dots button{width:24px;height:24px;padding:0;border:0;background:transparent;border-radius:50%;display:flex;align-items:center;justify-content:center;}
 .carousel__dots button::before{content:"";width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);transition:background .3s,transform .3s;}
 .carousel__dots button.is-active::before{background:#fff;transform:scale(1.25);}
 .carousel__dots button:focus-visible{outline:2px solid var(--c-yellow);}
