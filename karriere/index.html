@@ -82,6 +82,14 @@
 </head>
 <body class="page-karriere">
 
+<!-- Dekorative blaue Lichtflächen an den Seitenrändern -->
+<div class="orbs" aria-hidden="true">
+  <span class="orb orb--top"></span>
+  <span class="orb orb--left"></span>
+  <span class="orb orb--right"></span>
+  <span class="orb orb--bottom"></span>
+</div>
+
 <!-- SVG Icon-Sprite -->
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
   <symbol id="i-lock-btn" viewBox="0 0 40 40"><rect width="40" height="40" rx="20" fill="white"></rect><path fill-rule="evenodd" clip-rule="evenodd" d="M19.021 8.0553C18.5052 8.11984 17.6665 8.34878 17.1301 8.57139C15.3723 9.30091 13.8795 10.7874 13.134 12.5507C12.6476 13.7011 12.548 14.364 12.5476 16.4522C12.5473 17.9401 12.5523 18.0359 12.6293 18.0129C12.878 17.9385 15.5616 17.4694 15.7423 17.4687C15.7594 17.4686 15.7824 16.841 15.7934 16.074C15.8113 14.8287 15.824 14.6444 15.9119 14.3514C16.1399 13.5911 16.499 12.9872 17.0415 12.4516C18.2604 11.248 20.0561 10.9077 21.672 11.5739C22.6128 11.9618 23.4791 12.8367 23.8988 13.8231C24.1632 14.4445 24.2179 14.8571 24.2186 16.2381C24.2189 16.9149 24.231 17.4685 24.2456 17.4685C24.4472 17.4685 27.0823 17.9276 27.3715 18.0131C27.4485 18.0359 27.4535 17.9399 27.4533 16.4522C27.453 14.7468 27.416 14.3218 27.1961 13.4956C26.5153 10.9376 24.3511 8.82709 21.7802 8.21402C20.8968 8.00341 19.8956 7.9458 19.021 8.0553ZM18.1254 18.6453C15.8209 18.796 13.3555 19.2084 11.3405 19.7801L10.6489 19.9764L10.637 25.286L10.625 30.5957L10.7448 30.6413C11.2888 30.8481 13.4934 31.3553 14.7048 31.5523C16.724 31.8808 17.9158 31.9756 20.0239 31.9752C22.1029 31.9749 23.1814 31.8909 25.1332 31.5774C26.5232 31.3542 28.6655 30.8688 29.2465 30.6454L29.3754 30.5959V25.2967V19.9975L29.2465 19.9479C29.1756 19.9207 28.7696 19.8052 28.3442 19.6914C26.3515 19.1581 23.9409 18.7719 21.7952 18.6423C20.8775 18.5868 18.9959 18.5884 18.1254 18.6453ZM19.6775 21.5992C19.0795 21.673 18.4321 22.0857 18.0973 22.6067C17.6249 23.3416 17.6172 24.3432 18.0781 25.0616C18.2856 25.385 18.6873 25.7393 19.0189 25.8915L19.2973 26.0193V27.1814V28.3435H20.0004H20.7035L20.704 27.1834L20.7045 26.0232L20.9814 25.8944C21.4751 25.6647 21.9571 25.1397 22.1336 24.6394C22.5272 23.5238 22.0276 22.3077 20.9667 21.799C20.7891 21.7139 20.5466 21.632 20.4276 21.6171C20.3087 21.6021 20.1586 21.5837 20.0942 21.5761C20.0297 21.5685 19.8422 21.5789 19.6775 21.5992ZM19.703 23.0213C19.4709 23.104 19.3068 23.2571 19.1984 23.492C18.9897 23.9442 19.204 24.4614 19.6832 24.6616C20.1143 24.8417 20.5968 24.6407 20.8025 24.1951C20.85 24.092 20.889 23.9338 20.889 23.8435C20.889 23.4801 20.5982 23.0999 20.2451 23.0019C20.02 22.9393 19.9231 22.9428 19.703 23.0213Z" fill="#263E96"></path></symbol>
@@ -164,8 +172,55 @@
 <main id="content" class="site-main">
 
   <!-- ================= Hero ================= -->
-  <section class="hero">
+  <section class="hero hero--visual">
     <div class="bg bg--blue-rightside"></div>
+    <div class="hero__visual" aria-hidden="true">
+      <svg class="access-anim" viewBox="0 0 560 440" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="aa-panel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#132554"/><stop offset="1" stop-color="#000D30"/></linearGradient>
+          <linearGradient id="aa-card" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1B2D70"/><stop offset="1" stop-color="#000D30"/></linearGradient>
+          <filter id="aa-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <!-- Tür / Wand -->
+        <rect x="330" y="20" width="210" height="400" rx="18" fill="#000D30" opacity=".10"/>
+        <!-- Funkwellen -->
+        <g class="aa-waves">
+          <circle class="aa-wave" cx="340" cy="220" r="90" fill="none" stroke="#000D30" stroke-width="3"/>
+          <circle class="aa-wave" cx="340" cy="220" r="90" fill="none" stroke="#000D30" stroke-width="3"/>
+          <circle class="aa-wave" cx="340" cy="220" r="90" fill="none" stroke="#000D30" stroke-width="3"/>
+        </g>
+        <!-- Wandleser -->
+        <g class="aa-reader">
+          <rect x="350" y="100" width="170" height="250" rx="26" fill="url(#aa-panel)"/>
+          <rect x="366" y="116" width="138" height="218" rx="18" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="2"/>
+          <circle class="aa-led" cx="435" cy="142" r="9" fill="#FBC91B"/>
+          <!-- Schloss -->
+          <g class="aa-lock">
+            <path class="aa-shackle" d="M410 226v-28a25 25 0 0 1 50 0v28" fill="none" stroke="#FBC91B" stroke-width="11" stroke-linecap="round"/>
+            <rect class="aa-lockbody" x="396" y="224" width="78" height="62" rx="14" fill="#FBC91B"/>
+            <circle cx="435" cy="250" r="7" fill="#000D30"/>
+            <rect x="432" y="252" width="6" height="16" rx="3" fill="#000D30"/>
+          </g>
+          <!-- Haken -->
+          <path class="aa-check" d="M404 318l20 20 42-42" fill="none" stroke="#8CE8CC" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+        <!-- Keycard -->
+        <g class="aa-card-in">
+          <g class="aa-card">
+            <rect x="60" y="180" width="200" height="124" rx="16" fill="url(#aa-card)"/>
+            <rect x="60" y="180" width="200" height="124" rx="16" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"/>
+            <rect x="84" y="208" width="44" height="34" rx="6" fill="#FBC91B"/>
+            <path d="M84 225h44M106 208v34" stroke="#000D30" stroke-width="2"/>
+            <rect x="84" y="262" width="110" height="10" rx="5" fill="rgba(255,255,255,.35)"/>
+            <rect x="84" y="280" width="70" height="10" rx="5" fill="rgba(255,255,255,.2)"/>
+            <path d="M206 214a22 22 0 0 1 0 32M218 204a36 36 0 0 1 0 52M230 194a50 50 0 0 1 0 72" fill="none" stroke="#FBC91B" stroke-width="4" stroke-linecap="round"/>
+          </g>
+        </g>
+        <!-- Status -->
+        <text class="aa-text aa-text--locked" x="435" y="395" text-anchor="middle" font-family="Poppins, sans-serif" font-size="15" font-weight="600" fill="#000D30">Zutritt gesperrt</text>
+        <text class="aa-text aa-text--open" x="435" y="395" text-anchor="middle" font-family="Poppins, sans-serif" font-size="15" font-weight="600" fill="#000D30">Zutritt gewährt</text>
+      </svg>
+    </div>
     <div class="hero__inner">
       <h1 class="hero__title anim" data-anim="fadeInLeft"><b>Komm ins Team von ProVision Infra.</b> Wir machen Schlüssel digital.</h1>
       <div class="hero__sub anim delay-1" data-anim="fadeInLeft">

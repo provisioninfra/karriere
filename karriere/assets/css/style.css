@@ -871,3 +871,69 @@ body::after{
 .feature-card:hover,.job:hover,.job.is-open,.bento__item:hover{box-shadow:0 0 24px rgba(0,13,48,.25);}
 .highlight-card,.highlight-card:hover{box-shadow:0 -5px 25px 5px rgba(0,13,48,.2);}
 .carousel__slide.is-active .testi-card{box-shadow:0 0 24px rgba(0,13,48,.25);}
+
+/* =====================================================================
+   Blaue Lichtflächen an den Seitenrändern (Gegenstück zu den gelben
+   Glows der Hauptseite) und Hero-Animation „Zutritt“
+   ===================================================================== */
+.orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.orb{
+  position:absolute;border-radius:50%;
+  background:radial-gradient(closest-side,#263E96 0%,rgba(38,62,150,.85) 35%,rgba(38,62,150,.45) 65%,rgba(38,62,150,0) 100%);
+  filter:blur(22px);opacity:.9;
+  animation:orb-drift 18s ease-in-out infinite alternate;
+}
+.orb--top{top:-240px;left:50%;width:980px;height:480px;margin-left:-490px;}
+.orb--left{top:30%;left:-280px;width:560px;height:760px;animation-delay:-5s;}
+.orb--right{top:52%;right:-260px;width:600px;height:600px;animation-delay:-9s;}
+.orb--bottom{bottom:-280px;left:18%;width:1050px;height:500px;animation-delay:-13s;}
+@keyframes orb-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(24px,-18px) scale(1.06)}}
+@media (max-width:1024px){
+  .orb--top{width:700px;height:340px;margin-left:-350px;top:-180px;}
+  .orb--left{width:380px;height:520px;left:-200px;}
+  .orb--right{width:420px;height:420px;right:-200px;}
+  .orb--bottom{width:720px;height:340px;bottom:-190px;left:10%;}
+}
+@media (prefers-reduced-motion:reduce){.orb{animation:none;}}
+
+/* Hero-Animation */
+.hero{overflow:visible;}
+.hero__visual{
+  position:absolute;right:max(40px,calc((100% - 1400px)/2 + 20px));top:50%;
+  width:460px;max-width:36vw;transform:translateY(-52%);z-index:1;pointer-events:none;
+}
+.hero__visual svg{width:100%;height:auto;display:block;overflow:visible;filter:drop-shadow(0 20px 40px rgba(0,13,48,.25));}
+@media (min-width:1025px){
+  .hero--visual .hero__title,.hero--visual .hero__sub{width:auto;max-width:640px;}
+}
+@media (max-width:1024px){.hero__visual{display:none;}}
+
+.aa-reader{animation:aa-float 5s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
+.aa-card-in{transform:translate(-180px,0);opacity:0;animation:aa-card-in 1.3s cubic-bezier(.2,.8,.2,1) .4s forwards;}
+.aa-card{animation:aa-float 4s ease-in-out 1.6s infinite;transform-box:fill-box;transform-origin:center;}
+.aa-wave{opacity:0;transform:scale(.08);transform-box:fill-box;transform-origin:center;animation:aa-wave 1.4s ease-out forwards;}
+.aa-wave:nth-child(1){animation-delay:1.5s;}
+.aa-wave:nth-child(2){animation-delay:1.85s;}
+.aa-wave:nth-child(3){animation-delay:2.2s;}
+.aa-shackle{transform-box:fill-box;transform-origin:85% 100%;animation:aa-shackle .9s cubic-bezier(.3,1.4,.4,1) 2.7s forwards;}
+.aa-lockbody,.aa-shackle{animation-fill-mode:forwards;}
+.aa-lockbody{animation:aa-lockcolor .6s ease 2.9s forwards;}
+.aa-shackle{animation:aa-shackle .9s cubic-bezier(.3,1.4,.4,1) 2.7s forwards,aa-lockstroke .6s ease 2.9s forwards;}
+.aa-led{animation:aa-led .6s ease 2.8s forwards;}
+.aa-check{stroke-dasharray:90;stroke-dashoffset:90;animation:aa-check .6s ease-out 3.3s forwards;}
+.aa-text--open{opacity:0;animation:aa-fade-in .5s ease 3.4s forwards;}
+.aa-text--locked{animation:aa-fade-out .4s ease 3.3s forwards;}
+@keyframes aa-card-in{to{transform:translate(0,0);opacity:1}}
+@keyframes aa-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes aa-wave{0%{opacity:.75;transform:scale(.08)}100%{opacity:0;transform:scale(1)}}
+@keyframes aa-shackle{0%{transform:translateY(0) rotate(0)}55%{transform:translateY(-18px) rotate(0)}100%{transform:translateY(-18px) rotate(-28deg)}}
+@keyframes aa-lockcolor{to{fill:#8CE8CC}}
+@keyframes aa-lockstroke{to{stroke:#8CE8CC}}
+@keyframes aa-led{0%{fill:#FBC91B}100%{fill:#8CE8CC;filter:drop-shadow(0 0 8px #8CE8CC)}}
+@keyframes aa-check{to{stroke-dashoffset:0}}
+@keyframes aa-fade-in{to{opacity:1}}
+@keyframes aa-fade-out{to{opacity:0}}
+@media (prefers-reduced-motion:reduce){
+  .access-anim *{animation-duration:0s!important;animation-delay:0s!important;}
+  .aa-reader,.aa-card{animation:none!important;}
+}
