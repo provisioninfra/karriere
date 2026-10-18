@@ -296,24 +296,6 @@
     }
   }
 
-  /* ---------- Hero-Animation erneut abspielen (Hover / Tap) ---------- */
-  function initHeroAnim() {
-    var svg = document.querySelector('.hero-scene');
-    var hero = document.querySelector('.hero');
-    if (!svg || !hero || prefersReduced) return;
-    var busy = false;
-    function replay() {
-      if (busy) return;
-      busy = true;
-      var clone = svg.cloneNode(true);
-      svg.parentNode.replaceChild(clone, svg);
-      svg = clone;
-      setTimeout(function () { busy = false; }, 4500);
-    }
-    hero.addEventListener('mouseenter', replay);
-    hero.addEventListener('click', function (e) { if (!e.target.closest('a,button')) replay(); });
-  }
-
   /* ---------- Init ---------- */
   function init() {
     var y = document.getElementById('year');
@@ -326,7 +308,6 @@
     document.querySelectorAll('.carousel').forEach(initCarousel);
     initFaq();
     initJobs();
-    initHeroAnim();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

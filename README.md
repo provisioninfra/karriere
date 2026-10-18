@@ -1,8 +1,7 @@
 # ProVision Infra – Karriereseite (`/karriere`)
 
 Statische Unterseite für **provision-infra.de/karriere/** im exakten Design der Hauptseite
-(Elementor-Kit „ProVision“: Poppins, Navy `#000D30`, Akzente in metallischem Blau `#263E96`, Gold-Glows und
-metallische Gold-Elemente mit blauem Schimmer, Glass-Cards,
+(Elementor-Kit „ProVision“: Poppins, Navy `#000D30`, Gelb `#FBC91B`, Glass-Cards, Glow-Hintergründe,
 Pill-Header, Unlock-Button, Scroll-Animationen, Counter, Testimonial-Karussell, FAQ-Akkordeon).
 
 Inhalt, Aufbau und Struktur orientieren sich an <https://muenchener-marketing-gruppe.de/karriere/>.
