@@ -33,6 +33,20 @@ Pfade `assets/…` entsprechend anpassen.
 
 Lokale Vorschau: `cd karriere && python3 -m http.server 8080` → <http://localhost:8080/>
 
+## Sicherheit und Datenschutz
+
+- Die Seite lädt keine fremden Skripte. Einzige externe Ressourcen sind die beiden ProvenExpert-Siegel
+  (`images.provenexpert.com`), wie auf der Hauptseite. Beim Laden wird die IP-Adresse des Besuchers an
+  ProvenExpert übertragen; die Bilder werden mit `referrerpolicy="no-referrer"` eingebunden. Wer das vermeiden
+  will, bindet die Siegel über den Cookie-Manager (Borlabs) ein oder entfernt die beiden `<img>`-Tags.
+- Externe Links öffnen mit `rel="noopener noreferrer"`; die Seite setzt `referrer: strict-origin-when-cross-origin`.
+- Das Skript nutzt kein `innerHTML`, `eval` oder externe Eingaben. Formulare gibt es keine; Bewerbungen laufen
+  über `mailto:`-Links an die bereits im Impressum veröffentlichte Adresse.
+- `tools/wp_publish_draft.py` liest Zugangsdaten ausschließlich aus Umgebungsvariablen und schreibt sie nirgends
+  hin. `dist/`, `__pycache__/` und `.env*` sind per `.gitignore` ausgeschlossen.
+- Eine Content-Security-Policy lässt sich für die statische Variante nur serverseitig setzen (z. B. in der
+  `.htaccess`); innerhalb von WordPress/Elementor greifen die Regeln der Hauptseite.
+
 ## Vor dem Livegang prüfen
 
 - **Stellentexte** (3 Stellen: Servicetechniker, IT-Projekttechniker, Kundenberater) sind Vorschläge

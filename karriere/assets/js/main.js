@@ -161,7 +161,7 @@
     function getPerView() { return window.innerWidth <= MOBILE ? 1 : 3; }
     function buildDots() {
       if (!dots) return;
-      dots.innerHTML = '';
+      while (dots.firstChild) dots.removeChild(dots.firstChild);
       slides.forEach(function (_, i) {
         var b = document.createElement('button');
         b.type = 'button';
@@ -201,6 +201,7 @@
       var firstClone = slides[slides.length - 1].cloneNode(true);
       var lastClone = slides[0].cloneNode(true);
       firstClone.classList.add('is-clone'); lastClone.classList.add('is-clone');
+      firstClone.setAttribute('aria-hidden', 'true'); lastClone.setAttribute('aria-hidden', 'true');
       track.insertBefore(firstClone, slides[0]);
       track.appendChild(lastClone);
       var all = Array.prototype.slice.call(track.children);
@@ -285,12 +286,17 @@
   /* ---------- Stellen: Filter + Akkordeon ---------- */
   function initJobs() {
     var jobs = document.querySelectorAll('.job');
+    function setJob(job, open) {
+      job.classList.toggle('is-open', open);
+      var btn = job.querySelector('.job__btn');
+      if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
     jobs.forEach(function (job) {
       var head = job.querySelector('.job__head');
       if (!head) return;
-      head.addEventListener('click', function () {
-        var open = job.classList.toggle('is-open');
-        head.setAttribute('aria-expanded', open ? 'true' : 'false');
+      head.addEventListener('click', function (e) {
+        if (e.target.closest('a')) return;
+        setJob(job, !job.classList.contains('is-open'));
       });
     });
     var filterBtns = document.querySelectorAll('.filter [data-filter]');
@@ -305,14 +311,17 @@
         });
       });
     });
-    // Deep-Link: /karriere/#job-… öffnet die Stelle direkt
-    if (location.hash && location.hash.indexOf('#job-') === 0) {
-      var target = document.querySelector(location.hash);
+    // Deep-Link: /karriere/#job-… öffnet die Stelle direkt (auch bei Hash-Wechsel)
+    function openFromHash() {
+      if (!location.hash || location.hash.indexOf('#job-') !== 0) return;
+      var target = document.getElementById(location.hash.slice(1));
       if (target && target.classList.contains('job')) {
-        target.classList.add('is-open', 'animated', 'fadeInUp');
-        var h = target.querySelector('.job__head'); if (h) h.setAttribute('aria-expanded', 'true');
+        target.classList.add('animated', 'fadeInUp');
+        setJob(target, true);
       }
     }
+    openFromHash();
+    window.addEventListener('hashchange', openFromHash);
   }
 
   /* ---------- Init ---------- */
