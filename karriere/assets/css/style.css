@@ -62,13 +62,11 @@ a{color:inherit;text-decoration:none;}
 h1,h2,h3,h4,p,ul{margin:0;padding:0;}
 ul{list-style:none;}
 button{font-family:inherit;cursor:pointer;background:none;border:0;color:inherit;}
-/* Reset gegen Theme-/Kit-Button-Styles (Hello Elementor, Elementor Kit), falls die Seite in WordPress läuft */
-.site-header button,.site-main button,.site-footer button,
-.site-header button:hover,.site-main button:hover,.site-footer button:hover,
-.site-header button:focus,.site-main button:focus,.site-footer button:focus{
-  background:none;background-color:transparent;background-image:none;border:0;padding:0;margin:0;
-  color:inherit;font:inherit;line-height:inherit;letter-spacing:0;text-transform:none;
-  border-radius:0;box-shadow:none;min-height:0;min-width:0;width:auto;text-decoration:none;
+/* Reset gegen Theme-Button-Styles (Hello Elementor), falls die Seite in WordPress läuft.
+   :where() hält die Spezifität bei (0,0,1); alle Komponenten-Regeln (button.xyz) gewinnen. */
+:where(.site-header,.site-main,.site-footer) button{
+  background:none;border:0;padding:0;margin:0;color:inherit;font:inherit;line-height:inherit;
+  letter-spacing:0;text-transform:none;border-radius:0;box-shadow:none;min-height:0;min-width:0;width:auto;text-decoration:none;
 }
 .skip-link{position:absolute;left:-9999px;top:0;background:var(--c-yellow);color:var(--c-dark);padding:8px 16px;z-index:100000;}
 .skip-link:focus{left:10px;top:10px;}
@@ -145,7 +143,7 @@ strong,b{font-weight:700;}
   transition:transform .3s,box-shadow .3s;
 }
 .nav-menu .nav-cta a:hover{color:var(--c-dark);transform:scale(1.06);box-shadow:0 -5px 10px 5px rgba(251,201,27,.57);}
-.menu-toggle{display:none;width:40px;height:40px;align-items:center;justify-content:center;color:var(--c-white);}
+button.menu-toggle{display:none;width:40px;height:40px;align-items:center;justify-content:center;color:var(--c-white);}
 .menu-toggle svg{width:28px;height:28px;fill:currentColor;}
 .menu-toggle .icon-close{display:none;}
 .menu-toggle[aria-expanded="true"] .icon-open{display:none;}
@@ -357,7 +355,7 @@ strong,b{font-weight:700;}
   content:"";position:absolute;right:0;top:50%;transform:translateY(-50%);
   width:70px;height:70px;background:url("../img/quote.svg") center/contain no-repeat;
 }
-.carousel__arrow{
+button.carousel__arrow{
   position:absolute;top:100%;transform:translateY(-100%);
   width:64px;height:64px;padding:22px;border-radius:99px;
   background:var(--c-arrow);border:1px solid #FFFFFF4F;
@@ -365,10 +363,10 @@ strong,b{font-weight:700;}
   transition:background .3s,box-shadow .3s;z-index:2;
 }
 .carousel__arrow svg{width:18px;height:18px;fill:#fff;}
-.carousel__arrow:hover{background:var(--c-yellow);box-shadow:0 0 10px 5px var(--c-yellow);}
-.carousel__arrow:hover svg{fill:var(--c-dark);}
-.carousel__arrow--prev{left:50%;margin-left:-38px;transform:translate(-50%,-100%);}
-.carousel__arrow--next{right:50%;margin-right:-38px;transform:translate(50%,-100%);}
+button.carousel__arrow:hover{background:var(--c-yellow);box-shadow:0 0 10px 5px var(--c-yellow);}
+button.carousel__arrow:hover svg{fill:var(--c-dark);}
+button.carousel__arrow--prev{left:50%;margin-left:-38px;transform:translate(-50%,-100%);}
+button.carousel__arrow--next{right:50%;margin-right:-38px;transform:translate(50%,-100%);}
 .carousel__dots{display:flex;justify-content:center;gap:4px;margin-top:2px;position:relative;z-index:3;}
 .carousel__dots button{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
 .carousel__dots button::before{content:"";width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);transition:background .3s,transform .3s;}
@@ -392,8 +390,8 @@ strong,b{font-weight:700;}
 .job:hover,.job.is-open{border-color:var(--c-yellow);box-shadow:0 0 24.2px 0 rgba(250,211,126,.3);}
 .job.is-hidden{display:none;}
 .job__head{display:flex;align-items:center;gap:24px;width:100%;padding:28px 32px;text-align:left;cursor:pointer;}
-.job__btn{all:unset;display:block;cursor:pointer;font:inherit;color:inherit;}
-.job__btn:focus-visible{outline:2px solid var(--c-yellow);outline-offset:4px;border-radius:4px;}
+button.job__btn{all:unset;display:block;cursor:pointer;font:inherit;color:inherit;}
+button.job__btn:focus-visible{outline:2px solid var(--c-yellow);outline-offset:4px;border-radius:4px;}
 .job__icon{flex:0 0 60px;}
 .job__icon .ico{width:60px;height:60px;}
 .job__main{flex:1;display:flex;flex-direction:column;gap:8px;}
@@ -451,14 +449,14 @@ strong,b{font-weight:700;}
 /* ---------- FAQ Accordion (EAEL Advanced Accordion Original) ---------- */
 .faq{width:92%;max-width:1288px;margin:0 auto;}
 .faq__item{margin:10px 10px 0;}
-.faq__header{
+button.faq__header{
   display:flex;align-items:center;justify-content:space-between;gap:20px;width:100%;
   padding:32px;border-radius:8px;text-align:left;
   background:var(--c-glass-2);border:1px solid rgba(255,255,255,.1);
   transition:border-radius .2s,background .3s;
 }
-.faq__header:hover{background:var(--c-glass-3);}
-.faq__item.is-open .faq__header{border-radius:8px 8px 0 0;padding-bottom:10px;border-bottom-width:0;}
+button.faq__header:hover{background:var(--c-glass-3);}
+.faq__item.is-open button.faq__header{border-radius:8px 8px 0 0;padding-bottom:10px;border-bottom-width:0;}
 .faq__title{font-size:20px;font-weight:700;line-height:1.24em;color:#fff;}
 .faq__toggle{flex:0 0 50px;width:50px;height:50px;padding:9px;border-radius:50px;background:var(--c-glass-4);display:flex;align-items:center;justify-content:center;}
 .faq__toggle svg{width:22px;height:22px;fill:#fff;transition:transform .3s;}
@@ -622,7 +620,7 @@ strong,b{font-weight:700;}
   .site-header__nav{width:22%;align-items:center;}
   .nav-menu{display:none;}
   .nav-dropdown{display:grid;}
-  .menu-toggle{display:flex;margin-left:auto;}
+  button.menu-toggle{display:flex;margin-left:auto;}
   .nav-dropdown{top:calc(100% + 10px);}
   .hero{padding:90px 10px 40px;text-align:center;}
   .hero__inner{padding:0 10px;}
@@ -671,7 +669,7 @@ strong,b{font-weight:700;}
   .carousel__viewport{border:1px solid var(--c-yellow);border-radius:25px;box-shadow:0 0 12px var(--c-yellow);padding:0;}
   .carousel__slide{flex-basis:100%;padding:0;}
   .testi-card,.carousel__slide.is-active .testi-card{transform:none;opacity:1;border-color:transparent;box-shadow:none;min-height:0;}
-  .carousel__arrow{width:50px;height:50px;padding:15px;}
+  button.carousel__arrow{width:50px;height:50px;padding:15px;}
   .testi-card__text{font-size:14px;}
   .filter{gap:8px;}
   .filter button{font-size:12px;padding:8px 14px;}
@@ -685,7 +683,7 @@ strong,b{font-weight:700;}
   .timeline-mobile{display:block;margin-top:30px;}
   .faq{width:100%;}
   .faq__item{margin:8px 0 0;}
-  .faq__header{padding:20px;}
+  button.faq__header{padding:20px;}
   .faq__title{font-size:14px;line-height:20px;}
   .faq__toggle{flex-basis:40px;width:40px;height:40px;}
   .faq__toggle svg{width:18px;height:18px;}
