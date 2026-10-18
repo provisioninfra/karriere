@@ -723,15 +723,37 @@ strong,b{font-weight:700;}
 html{background:#F3BD16;}
 body{
   color:var(--c-ink);
-  background:linear-gradient(180deg,#FFD54F 0%,#FBC91B 38%,#F2BB14 100%);
+  background-color:#FBC91B;
+  background-image:
+    /* feine, gebürstete Metallstruktur */
+    repeating-linear-gradient(118deg,rgba(38,62,150,.07) 0 1px,rgba(255,255,255,0) 1px 4px,rgba(255,255,255,.05) 4px 5px,rgba(255,255,255,0) 5px 9px),
+    /* blaue Reflexbänder im Wechsel mit hellen Lichtkanten */
+    linear-gradient(118deg,
+      rgba(38,62,150,.26) 0%,
+      rgba(255,255,255,.14) 14%,
+      rgba(38,62,150,.20) 28%,
+      rgba(255,244,196,.22) 42%,
+      rgba(38,62,150,.28) 56%,
+      rgba(255,255,255,.12) 70%,
+      rgba(38,62,150,.22) 84%,
+      rgba(255,244,196,.16) 100%),
+    /* weiche blaue Lichtflächen */
+    radial-gradient(120% 80% at 85% 8%,rgba(38,62,150,.22),transparent 60%),
+    radial-gradient(90% 70% at 8% 92%,rgba(38,62,150,.20),transparent 60%),
+    linear-gradient(180deg,#FFD54F 0%,#FBC91B 38%,#F2BB14 100%);
+  background-attachment:fixed;
 }
-body::before{
-  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background:
-    linear-gradient(115deg,rgba(38,62,150,0) 0%,rgba(38,62,150,.07) 32%,rgba(255,255,255,.16) 48%,rgba(38,62,150,.08) 64%,rgba(38,62,150,0) 100%),
-    radial-gradient(120% 80% at 85% 10%,rgba(38,62,150,.12),transparent 60%),
-    radial-gradient(90% 70% at 10% 90%,rgba(38,62,150,.10),transparent 60%);
+/* wandernder Lichtreflex über dem Metall */
+body::after{
+  content:"";position:fixed;inset:-20% -60%;z-index:0;pointer-events:none;
+  background:linear-gradient(118deg,transparent 42%,rgba(255,255,255,.18) 48%,rgba(150,180,255,.22) 52%,transparent 58%);
+  animation:bg-sheen 14s linear infinite;
 }
+.site-header,.site-main,.site-footer,.pe-badge-fixed{position:relative;z-index:1;}
+.site-header{position:absolute;}
+.pe-badge-fixed{position:fixed;}
+@keyframes bg-sheen{0%{transform:translateX(-35%)}100%{transform:translateX(35%)}}
+@media (prefers-reduced-motion:reduce){body::after{animation:none;}}
 .hero{background:transparent;}
 .shadeup::before{display:none;}
 .divider{background:linear-gradient(90deg,transparent,rgba(0,13,48,.35),transparent);}
