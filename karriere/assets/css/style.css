@@ -705,3 +705,134 @@ strong,b{font-weight:700;}
   .site-footer__row--bottom{font-size:13px;gap:12px;}
   .pe-badge-fixed{display:none;}
 }
+
+/* =====================================================================
+   Theme „Gold“: gelber Seitenhintergrund mit dezentem blau-metallischem
+   Schimmer. Dunkle Typografie und navy-getönte Glasflächen für Kontrast.
+   ===================================================================== */
+:root{
+  --c-ink:#000D30;
+  --c-ink-60:rgba(0,13,48,.6);
+  --tint-04:rgba(0,13,48,.04);
+  --tint-06:rgba(0,13,48,.06);
+  --tint-08:rgba(0,13,48,.08);
+  --tint-12:rgba(0,13,48,.12);
+  --tint-20:rgba(0,13,48,.2);
+  --tint-30:rgba(0,13,48,.3);
+}
+html{background:#F3BD16;}
+body{
+  color:var(--c-ink);
+  background:linear-gradient(180deg,#FFD54F 0%,#FBC91B 38%,#F2BB14 100%);
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    linear-gradient(115deg,rgba(38,62,150,0) 0%,rgba(38,62,150,.07) 32%,rgba(255,255,255,.16) 48%,rgba(38,62,150,.08) 64%,rgba(38,62,150,0) 100%),
+    radial-gradient(120% 80% at 85% 10%,rgba(38,62,150,.12),transparent 60%),
+    radial-gradient(90% 70% at 10% 90%,rgba(38,62,150,.10),transparent 60%);
+}
+.hero{background:transparent;}
+.shadeup::before{display:none;}
+.divider{background:linear-gradient(90deg,transparent,rgba(0,13,48,.35),transparent);}
+
+/* Glows: nur noch blaue, sehr zurückhaltende Lichtflächen */
+.bg{opacity:.10!important;mix-blend-mode:multiply;}
+.bg--blue-center,.bg--blue-right,.bg--blue-topright,.bg--blue-rightside{background-image:url("../img/glow-ellipse-3.png");}
+.bg--blue-left{background-image:url("../img/glow-ellipse-4.png");}
+.bg--yellow-left{background-image:url("../img/glow-ellipse-4.png");}
+.bg--yellow-right{background-image:url("../img/glow-ellipse-5.png");}
+.bg--v{opacity:.07!important;}
+
+/* Header */
+.site-header__inner{background:rgba(255,255,255,.22);border-color:rgba(0,13,48,.22);box-shadow:0 8px 30px rgba(0,13,48,.12);}
+.site-header__logo img{filter:brightness(0) saturate(100%) invert(8%) sepia(44%) saturate(3600%) hue-rotate(216deg) brightness(90%);}
+.nav-menu a{color:var(--c-ink);}
+.nav-menu a:hover,.nav-menu a:focus,.nav-menu a.is-active{color:var(--c-accent);}
+.menu-toggle{color:var(--c-ink);}
+.nav-dropdown{background:#F7C41C;box-shadow:0 10px 30px rgba(0,13,48,.25);}
+.nav-dropdown a{color:var(--c-ink);}
+.nav-dropdown a:hover,.nav-dropdown a.is-active{background:var(--c-accent);color:#fff;}
+
+/* Typografie-Akzente */
+.yellow{color:var(--c-accent);}
+.hero__title,.hero__sub,.stat-google__num,.stat-google__label,.counter__title,.counter__number{color:var(--c-ink);}
+.stat-google__rating svg,.counter__prefix{color:var(--c-accent);fill:var(--c-accent);}
+.stat-google__logo{box-shadow:0 2px 10px rgba(0,13,48,.2);}
+
+/* Buttons behalten Metallic-Blau, bekommen Tiefe */
+.btn,.nav-menu .nav-cta a{box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -2px 6px rgba(0,0,0,.25),0 6px 18px rgba(0,13,48,.25);}
+.btn:hover,.btn:focus{box-shadow:0 0 16px 5px rgba(38,62,150,.35),0 8px 22px rgba(0,13,48,.3),inset 0 1px 0 rgba(255,255,255,.4);}
+
+/* Glasflächen: navy-getönt */
+.glass-card{background:var(--tint-06);border-color:var(--tint-12);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 8px 24px rgba(0,13,48,.12);}
+.icon-row__icon{background:transparent;}
+.feature-card{background:var(--tint-06);border-color:var(--tint-30);}
+.feature-card:hover{background:rgba(38,62,150,.10);border-color:var(--c-accent);box-shadow:0 0 24px rgba(38,62,150,.3);}
+.feature-card__note{background:var(--tint-08);}
+.story-card{background:var(--tint-06);border-color:var(--tint-30);}
+.highlight-card{background:rgba(38,62,150,.10);border-color:var(--c-accent);box-shadow:0 -5px 25px 5px rgba(38,62,150,.25);}
+.highlight-card:hover{box-shadow:0 -5px 25px 5px rgba(38,62,150,.3);}
+.bento__item{background:var(--tint-06);border-color:var(--tint-20);}
+.bento__item:hover{border-color:var(--c-accent);box-shadow:0 0 24px rgba(38,62,150,.25);}
+.bento__num{color:var(--tint-08);}
+.benefit{background:var(--tint-06);border-color:var(--tint-12);}
+.benefit:hover{background:var(--tint-12);}
+
+/* Karussell */
+.testi-card{background:linear-gradient(180deg,rgba(0,13,48,0) 0%,rgba(0,13,48,.10) 100%);}
+.carousel__slide.is-active .testi-card{border-color:var(--c-accent);box-shadow:0 0 24px rgba(38,62,150,.3);}
+.testi-card__text,.testi-card__name,.testi-card__role{color:var(--c-ink);}
+.testi-card__person::after{color:var(--c-accent);opacity:.55;}
+.testi-card__stars svg{color:var(--c-accent);}
+.carousel__arrow{border-color:rgba(0,13,48,.45);box-shadow:inset 0 1px 0 rgba(160,190,255,.6),inset 0 -2px 4px rgba(38,62,150,.3),0 6px 16px rgba(0,13,48,.25);}
+.carousel__dots button{background:var(--tint-20);}
+.carousel__dots button.is-active{background:var(--c-accent);}
+
+/* Stellen */
+.filter button{background:var(--tint-06);border-color:var(--tint-20);color:var(--c-ink);}
+.job{background:var(--tint-06);border-color:var(--tint-30);}
+.job:hover,.job.is-open{border-color:var(--c-accent);box-shadow:0 0 24px rgba(38,62,150,.3);}
+.job__meta span{background:var(--tint-08);border-color:var(--tint-12);}
+.job__meta svg{fill:var(--c-accent);}
+.job__toggle{background:var(--tint-12);}
+.job__toggle svg{fill:var(--c-ink);}
+.job__content{border-top-color:var(--tint-12);}
+.job__col{background:var(--tint-06);}
+.job__col h4{color:var(--c-accent);}
+.job__footer p{color:var(--c-ink-60);}
+
+/* Timeline */
+.timeline__line::before{background:rgba(0,13,48,.45);}
+.timeline__dot span{border-color:rgba(0,13,48,.45);box-shadow:0 0 0 6px #FBC91B,inset 0 1px 0 rgba(160,190,255,.6),inset 0 -2px 4px rgba(38,62,150,.3),0 6px 14px rgba(0,13,48,.25);}
+.timeline__dot span:hover{box-shadow:0 0 0 6px #FBC91B,0 0 18px rgba(38,62,150,.5),inset 0 1px 0 rgba(160,190,255,.6);}
+.timeline-mobile::before{background:rgba(0,13,48,.45);}
+.timeline-mobile li::before{border-color:rgba(0,13,48,.45);}
+
+/* FAQ */
+.faq__header{background:var(--tint-08);border-color:var(--tint-12);}
+.faq__header:hover{background:var(--tint-12);}
+.faq__title{color:var(--c-ink);}
+.faq__toggle{background:var(--tint-12);}
+.faq__toggle svg{fill:var(--c-ink);}
+.faq__content{background:var(--tint-08);border-color:var(--tint-12);}
+.faq__content a{color:var(--c-accent);}
+
+/* CTA */
+.cta__box{background:var(--tint-06);border-color:var(--tint-30);}
+.cta__contact a:hover{color:var(--c-accent);}
+.cta__contact svg{fill:var(--c-accent)!important;}
+#stellen .container > p:last-child{color:var(--c-ink-60)!important;}
+.cta__visual .badge{background:rgba(255,255,255,.35);border-color:var(--tint-20);color:var(--c-ink);}
+.cta__visual .badge b{color:var(--c-accent);}
+
+/* Footer */
+.site-footer__inner{border-color:var(--tint-30);background:var(--tint-04);}
+.site-footer__inner::before{background:url("../img/glow-ellipse-3.png") -300px -500px/80% auto no-repeat;opacity:.1;mix-blend-mode:multiply;}
+.site-footer__logo img{filter:brightness(0) saturate(100%) invert(8%) sepia(44%) saturate(3600%) hue-rotate(216deg) brightness(90%);}
+.footer-menu a,.legal a,.site-footer__row--bottom{color:var(--c-ink);}
+.footer-menu a:hover,.legal a:hover{color:var(--c-accent);}
+.pe-rating__stars svg{fill:var(--c-accent);}
+.pe-rating a{color:var(--c-accent);}
+.site-footer__row--bottom{border-top-color:var(--tint-30);}
+.skip-link{background:var(--c-accent);color:#fff;}
