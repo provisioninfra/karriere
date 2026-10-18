@@ -45,6 +45,27 @@ def build(media_map: dict) -> str:
     if leftover:
         sys.exit(f"Nicht gemappte Bilder im HTML: {sorted(set(leftover))}")
 
+    # SVG-Sprite auflösen: jedes <use href="#id"> durch den Symbol-Inhalt ersetzen.
+    # Grund: In WordPress/Elementor gehen Sprite-Referenzen verloren (Symbole werden
+    # nicht gerendert); eingebettete Pfade funktionieren überall.
+    sprite = re.search(r'<svg xmlns="http://www.w3.org/2000/svg" class="svg-sprite" aria-hidden="true">(.*?)</svg>', body, flags=re.S)
+    symbols = {}
+    if sprite:
+        for m in re.finditer(r'<symbol id="([^"]+)" viewBox="([^"]+)">(.*?)</symbol>', sprite.group(1), flags=re.S):
+            symbols[m.group(1)] = (m.group(2), m.group(3).strip())
+        body = body.replace(sprite.group(0), "")
+    def inline_use(m):
+        attrs, sid = m.group(1), m.group(2)
+        if sid not in symbols:
+            sys.exit(f"Unbekanntes Symbol: #{sid}")
+        vb, inner = symbols[sid]
+        if "viewBox" not in attrs:
+            attrs += f' viewBox="{vb}"'
+        return f"<svg{attrs}>{inner}</svg>"
+    body = re.sub(r'<svg([^>]*)><use href="#([^"]+)"/></svg>', inline_use, body)
+    if "<use " in body:
+        sys.exit("Es sind noch <use>-Referenzen übrig.")
+
     # JSON-LD aus dem Head mitnehmen (JobPosting-Schema)
     ld = re.search(r'<script type="application/ld\+json">.*?</script>', html, flags=re.S)
     ld_block = ld.group(0) if ld else ""

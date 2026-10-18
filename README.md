@@ -26,6 +26,10 @@ der Hauptseite legen (gleiche Ebene wie `wp-content/`). Die Seite ist dann unter
 `https://provision-infra.de/karriere/` erreichbar. WordPress-Permalinks greifen nicht, weil der
 Webserver vorhandene Ordner zuerst ausliefert.
 
+**Hinweis zu Icons in WordPress:** Das Child-Theme der Hauptseite benennt per `uniquifySvgIds()` alle
+SVG-Symbol-IDs um; Sprite-Verweise (`<use href="#…">`) laufen dort ins Leere. `tools/build_wordpress_bundle.py`
+löst den Sprite deshalb auf und bettet jedes Icon direkt ein.
+
 **Variante B – in WordPress/Elementor:** Neue Seite „Karriere“ (Slug `karriere`) mit Vorlage
 „Elementor Canvas“ anlegen, ein HTML-Widget einfügen und den Inhalt von `karriere/index.html`
 (Body) hineinkopieren. CSS/JS/Bilder vorher unter `wp-content/uploads/karriere/` hochladen und die
