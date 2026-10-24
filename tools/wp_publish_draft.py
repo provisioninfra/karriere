@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Legt die Karriereseite als NEUE Entwurfsseite in WordPress an.
+Legt die Karriereseite als NEUE Entwurfsseite in WordPress an bzw. aktualisiert
+die eigene, bereits angelegte Seite (Entwurf oder veröffentlicht, Status bleibt).
 
 Regeln (Vorgabe des Kunden): bestehende Seiten, Menüs, Plugins, Formulare
 und Einstellungen werden nicht angefasst. Es entstehen nur neue Medien
@@ -145,11 +146,13 @@ async def main():
         subprocess.run([sys.executable, str(ROOT / "tools/build_wordpress_bundle.py")], check=True)
         bundle = (DIST / "karriere-wordpress.html").read_text(encoding="utf-8")
 
-        # 5) Eigenen Entwurf wiederverwenden oder neu anlegen (nie fremde/veröffentlichte Seiten anfassen)
-        own = [e for e in existing if e.get("status") == "draft" and e.get("author") == me.get("id")]
+        # 5) Eigene Seite wiederverwenden oder neu anlegen (nie fremde Seiten anfassen).
+        #    Eine bereits veröffentlichte eigene Seite behält ihren Status, nur der Inhalt wird aktualisiert.
+        own = [e for e in existing if e.get("author") == me.get("id") and e.get("status") in ("draft", "publish")]
+        status = "draft"
         if own:
-            pg = own[0]; post_id = pg["id"]
-            print("Eigener Entwurf vorhanden, wird aktualisiert: ID", post_id, flush=True)
+            pg = own[0]; post_id = pg["id"]; status = pg["status"]
+            print("Eigene Seite vorhanden, wird aktualisiert: ID", post_id, "| Status", status, flush=True)
         else:
             r = await rest(ctx, "post",
                 f"{BASE}/wp-json/wp/v2/pages", headers=H,
@@ -172,12 +175,12 @@ async def main():
         result = await page.evaluate(
             """([elements, settings]) => new Promise((resolve) => {
                 elementorCommon.ajax.addRequest('save_builder', {
-                    data: { status: 'draft', elements: elements, settings: settings },
+                    data: { status: settings.post_status, elements: elements, settings: settings },
                     success: (res) => resolve({ ok: true, res: res }),
                     error: (err) => resolve({ ok: false, err: (err && (err.message || JSON.stringify(err))) || 'unbekannt' })
                 });
             })""",
-            [build_elements(bundle), {"template": "elementor_canvas", "post_status": "draft"}],
+            [build_elements(bundle), {"template": "elementor_canvas", "post_status": status}],
         )
         if not result.get("ok"):
             sys.exit(f"save_builder fehlgeschlagen: {result}")
@@ -186,7 +189,7 @@ async def main():
         # Kontrolle: Seite neu lesen
         r = await rest(ctx, "get", f"{BASE}/wp-json/wp/v2/pages/{post_id}?context=edit", headers=H)
         pg = await r.json()
-        preview = pg.get("link") + ("&" if "?" in pg["link"] else "?") + "preview=true"
+        preview = pg["link"] if pg["status"] == "publish" else pg["link"] + ("&" if "?" in pg["link"] else "?") + "preview=true"
         print("Status:", pg["status"], "| Template:", pg.get("template"), "| Vorschau:", preview)
 
         # 7) Vorschau-Screenshot (Admin-Leiste ausgeblendet, keine Zugangsdaten sichtbar)
