@@ -27,7 +27,7 @@ async def rest(ctx, method, url, retries=8, **kw):
     for i in range(retries):
         r = await getattr(ctx.request, method)(url, **kw)
         ctype = (r.headers.get("content-type") or "").lower()
-        json_expected = "/wp-json/" in url or "rest-nonce" in url
+        json_expected = "/wp-json/" in url  # admin-ajax (rest-nonce) antwortet als text/html
         if r.status not in (429, 502, 503, 504) and not (json_expected and r.status == 200 and "json" not in ctype and "text/plain" not in ctype):
             return r
         wait = 15 * (i + 1)
