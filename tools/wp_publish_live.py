@@ -21,13 +21,17 @@ PAGE_ID = int(os.environ.get("WP_PAGE_ID", "4408"))
 CHROME = os.environ.get("CHROME_PATH")
 
 
-async def rest(ctx, method, url, retries=6, **kw):
+async def rest(ctx, method, url, retries=8, **kw):
+    """REST-Aufruf mit Backoff bei Ratenlimit (429/503/502/504) oder HTML-Antwort statt JSON (Hoster-Drossel)."""
+    r = None
     for i in range(retries):
         r = await getattr(ctx.request, method)(url, **kw)
-        if r.status not in (429, 503):
+        ctype = (r.headers.get("content-type") or "").lower()
+        json_expected = "/wp-json/" in url or "rest-nonce" in url
+        if r.status not in (429, 502, 503, 504) and not (json_expected and r.status == 200 and "json" not in ctype and "text/plain" not in ctype):
             return r
         wait = 15 * (i + 1)
-        print(f"  Ratenlimit ({r.status}), warte {wait}s ...", flush=True)
+        print(f"  Ratenlimit/Störung ({r.status}, {ctype[:20]}), warte {wait}s ...", flush=True)
         await asyncio.sleep(wait)
     return r
 
