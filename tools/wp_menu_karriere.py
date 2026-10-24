@@ -45,6 +45,11 @@ async def rest(ctx, method, url, retries=12, **kw):
         if r.status not in (429, 502, 503, 504) and not (json_expected and r.status == 200 and "json" not in ctype and "text/plain" not in ctype):
             return r
         wait = 60
+        ra = r.headers.get("retry-after")
+        if i == 0:
+            print(f"  Antwort-Header bei {r.status}: {sorted(k for k in r.headers.keys() if k.lower() not in ('set-cookie',))}", flush=True)
+        if ra and ra.isdigit():
+            wait = max(wait, min(int(ra), 300))
         print(f"  Ratenlimit/Störung ({r.status}, {ctype[:20]}), warte {wait}s ...", flush=True)
         await asyncio.sleep(wait)
     return r
@@ -54,7 +59,8 @@ async def login(p):
     browser = await p.chromium.launch(**({"executable_path": CHROME} if CHROME else {}))
     ctx = await browser.new_context(viewport={"width": 1280, "height": 800}, locale="de-DE")
     page = await ctx.new_page()
-    await page.goto(f"{BASE}/wp-login.php", wait_until="domcontentloaded")
+    # redirect_to=Startseite: das Dashboard würde Dutzende Hintergrund-Anfragen auslösen und die Drossel des Hosters aktivieren
+    await page.goto(f"{BASE}/wp-login.php?redirect_to={BASE}/", wait_until="domcontentloaded")
     await page.fill("#user_login", USER)
     await page.fill("#user_pass", PASS)
     await page.click("#wp-submit")
@@ -62,6 +68,9 @@ async def login(p):
     await page.wait_for_timeout(1500)
     if "wp-login.php" in page.url:
         sys.exit("Login fehlgeschlagen.")
+    await page.goto("about:blank")
+    print(f"angemeldet, warte {SETTLE}s, bis die Anfrage-Drossel zur Ruhe kommt ...", flush=True)
+    await asyncio.sleep(SETTLE)
     r = await rest(ctx, "get", f"{BASE}/wp-admin/admin-ajax.php?action=rest-nonce")
     nonce = (await r.text()).strip()
     if not re.fullmatch(r"[0-9a-f]{10}", nonce):
@@ -73,7 +82,8 @@ def plain(s):
     return re.sub(r"<[^>]+>", "", s or "").replace("&amp;", "&").strip()
 
 
-PAUSE = 20  # Sekunden zwischen API-Aufrufen, damit die Drossel des Hosters nicht anspringt
+PAUSE = 30   # Sekunden zwischen API-Aufrufen, damit die Drossel des Hosters nicht anspringt
+SETTLE = 90  # Sekunden Ruhe nach dem Login
 
 
 async def load_menus(ctx, H):
