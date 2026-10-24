@@ -387,7 +387,7 @@ button.carousel__arrow--next{right:50%;margin-right:-38px;transform:translate(50
 /* ---------- Jobs ---------- */
 .filter{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:30px 0 40px;}
 .filter button{
-  white-space:nowrap;padding:10px 22px;border-radius:100px;font-size:14px;font-weight:500;
+  white-space:nowrap;min-height:44px;padding:10px 22px;border-radius:100px;font-size:14px;font-weight:500;
   background:var(--c-glass);border:1px solid rgba(255,255,255,.2);color:#fff;
   transition:background .3s,color .3s,transform .3s;
 }
@@ -481,7 +481,7 @@ button.faq__header:hover{background:var(--c-glass-3);}
   background:var(--c-glass-2);border:1px solid rgba(255,255,255,.1);border-top:0;border-radius:0 0 8px 8px;
   font-size:16px;line-height:1.64em;
 }
-.faq__content a{color:var(--c-yellow);text-decoration:underline;}
+.faq__content a{color:var(--c-yellow);text-decoration:underline;display:inline-block;padding:4px 0;}
 
 /* ---------- CTA Box ("So kommst du zu deinem …") ---------- */
 .cta{display:flex;align-items:center;gap:40px;min-height:600px;}
@@ -494,8 +494,8 @@ button.faq__header:hover{background:var(--c-glass-3);}
 .cta__box h2{font-size:32px;font-weight:400;line-height:1.24em;}
 .cta__box h2 b{font-weight:700;}
 .cta__box p{font-size:16px;}
-.cta__contact{display:flex;flex-direction:column;gap:10px;font-size:16px;}
-.cta__contact a{display:inline-flex;align-items:center;gap:10px;transition:color .3s;}
+.cta__contact{display:flex;flex-direction:column;gap:0;font-size:16px;}
+.cta__contact a{display:inline-flex;align-items:center;gap:10px;min-height:44px;transition:color .3s;}
 .cta__contact a:hover{color:var(--c-yellow);}
 .cta__contact svg{width:18px;height:18px;fill:var(--c-yellow);}
 .cta__contact-line{display:inline-flex;align-items:center;gap:10px;}
@@ -542,6 +542,7 @@ button.faq__header:hover{background:var(--c-glass-3);}
 /* ---------- Scroll-Animationen (Elementor / animate.css, 1:1) ---------- */
 .anim{visibility:hidden;}                 /* .elementor-invisible */
 .animated{visibility:visible;animation-duration:1.25s;animation-fill-mode:both;}
+.animated.anim-done{animation:none;} /* Endzustand = Normalzustand; Hover-Transforms wieder wirksam */
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes fadeInUp{from{opacity:0;transform:translate3d(0,100%,0)}to{opacity:1;transform:none}}
 @keyframes fadeInDown{from{opacity:0;transform:translate3d(0,-100%,0)}to{opacity:1;transform:none}}

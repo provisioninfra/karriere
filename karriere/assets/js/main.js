@@ -36,6 +36,22 @@
       });
     }, { threshold: 0, rootMargin: '0px 0px -10% 0px' });
     items.forEach(function (el) { io.observe(el); });
+    // Nach Ende der Einblend-Animation die Animation lösen, damit Hover-Transforms
+    // (Karten, Buttons) nicht von animation-fill-mode überschrieben werden.
+    document.addEventListener('animationend', function (e) {
+      var el = e.target;
+      if (el.classList && el.classList.contains('animated')) el.classList.add('anim-done');
+    });
+    // Tastaturnutzer: beim Tabben die nächsten Bereiche einblenden, sonst wären
+    // deren Links/Buttons (visibility:hidden) nicht erreichbar.
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Tab') return;
+      var limit = window.pageYOffset + window.innerHeight * 2;
+      items.forEach(function (el) {
+        if (el.classList.contains('animated')) return;
+        if (el.getBoundingClientRect().top + window.pageYOffset < limit) { el.classList.add('animated', animName(el)); io.unobserve(el); }
+      });
+    });
     // Sicherheitsnetz: Elemente, die nach dem Laden bereits sichtbar sind
     window.addEventListener('load', function () {
       items.forEach(function (el) {
