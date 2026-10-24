@@ -117,7 +117,9 @@
     function step(ts) {
       if (!start) start = ts;
       var p = Math.min((ts - start) / duration, 1);
-      window.scrollTo(0, startY + dist * swing(p));
+      var y = startY + dist * swing(p);
+      // behavior:'instant' umgeht ein globales scroll-behavior:smooth (Theme), sonst würde jeder Schritt erneut geglättet
+      window.scrollTo({ top: y, behavior: 'instant' });
       if (p < 1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
@@ -282,6 +284,50 @@
     restart();
   }
 
+  /* ---------- Ablauf: scrollgebundene Sequenz (wie Lottie "bind to scroll" im Original) ----------
+     Fortschritt 0..1 = Position des Blocks im Viewport (Eintritt unten -> Austritt oben).
+     Reihenfolge je Schritt wie im Original: Punkt entriegelt (gelb + Glow), dann zeichnet sich die Linie zum nächsten Punkt. */
+  function initTimeline() {
+    var blocks = [];
+    var desk = document.querySelector('.timeline');
+    var mob = document.querySelector('.timeline-mobile');
+    if (desk) blocks.push({ el: desk, dots: desk.querySelectorAll('.timeline__dot'), bar: desk.querySelector('.timeline__progress'), axis: 'x' });
+    if (mob) blocks.push({ el: mob, dots: mob.querySelectorAll('li'), bar: mob, axis: 'y' });
+    if (!blocks.length) return;
+    var STEP = 54 / 327, DOT0 = 10 / 327, LINE0 = 44 / 327, LINE_LEN = 20 / 327; // Frames des Originals (327 Frames gesamt)
+    function clamp(v) { return Math.max(0, Math.min(1, v)); }
+    function render() {
+      ticking = false;
+      var vh = window.innerHeight;
+      blocks.forEach(function (b) {
+        if (!b.el.offsetParent) return;
+        var r = b.el.getBoundingClientRect();
+        var p = prefersReduced ? 1 : clamp((vh - r.top) / (vh + r.height));
+        var n = b.dots.length, done = 0;
+        for (var i = 0; i < n; i++) {
+          var active = p >= DOT0 + STEP * i;
+          b.dots[i].classList.toggle('is-active', active);
+          if (i < n - 1) done += clamp((p - (LINE0 + STEP * i)) / LINE_LEN);
+        }
+        if (b.bar) {
+          if (b.axis === 'x') {
+            b.bar.style.width = (done / (n - 1) * 80) + '%';
+          } else {
+            var first = b.dots[0].getBoundingClientRect(), last = b.dots[n - 1].getBoundingClientRect();
+            var span = (last.top - first.top);
+            b.bar.style.setProperty('--tl-progress', Math.round(span * done / (n - 1)) + 'px');
+          }
+        }
+      });
+    }
+    var ticking = false;
+    function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(render); } }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    window.addEventListener('load', render);
+    render();
+  }
+
   /* ---------- FAQ ---------- */
   function initFaq() {
     document.querySelectorAll('.faq__item').forEach(function (item) {
@@ -350,6 +396,7 @@
     initAnimations();
     initCounters();
     document.querySelectorAll('.carousel').forEach(initCarousel);
+    initTimeline();
     initFaq();
     initJobs();
   }
