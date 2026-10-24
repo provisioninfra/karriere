@@ -35,7 +35,7 @@ TARGET_HINTS = {
 }
 
 
-async def rest(ctx, method, url, retries=8, **kw):
+async def rest(ctx, method, url, retries=12, **kw):
     """REST-Aufruf mit Backoff bei Ratenlimit (429/503/502/504) oder HTML-Antwort statt JSON (Hoster-Drossel)."""
     r = None
     for i in range(retries):
@@ -44,7 +44,7 @@ async def rest(ctx, method, url, retries=8, **kw):
         json_expected = "/wp-json/" in url or "rest-nonce" in url
         if r.status not in (429, 502, 503, 504) and not (json_expected and r.status == 200 and "json" not in ctype and "text/plain" not in ctype):
             return r
-        wait = 15 * (i + 1)
+        wait = 60
         print(f"  Ratenlimit/Störung ({r.status}, {ctype[:20]}), warte {wait}s ...", flush=True)
         await asyncio.sleep(wait)
     return r
@@ -73,17 +73,32 @@ def plain(s):
     return re.sub(r"<[^>]+>", "", s or "").replace("&amp;", "&").strip()
 
 
+PAUSE = 20  # Sekunden zwischen API-Aufrufen, damit die Drossel des Hosters nicht anspringt
+
+
 async def load_menus(ctx, H):
+    await asyncio.sleep(PAUSE)
     r = await rest(ctx, "get", f"{BASE}/wp-json/wp/v2/menus?per_page=100", headers=H)
     if r.status != 200:
         sys.exit(f"Menüs nicht lesbar: {r.status} {(await r.text())[:200]}")
     menus = await r.json()
+    items = []
+    page = 1
+    while True:
+        await asyncio.sleep(PAUSE)
+        r = await rest(ctx, "get", f"{BASE}/wp-json/wp/v2/menu-items?per_page=100&page={page}", headers=H)
+        if r.status != 200:
+            sys.exit(f"Menüeinträge nicht lesbar: {r.status} {(await r.text())[:200]}")
+        batch = await r.json()
+        items += batch
+        if len(batch) < 100:
+            break
+        page += 1
     out = []
     for m in menus:
-        r = await rest(ctx, "get", f"{BASE}/wp-json/wp/v2/menu-items?menus={m['id']}&per_page=100&context=edit", headers=H)
-        items = await r.json() if r.status == 200 else []
-        items.sort(key=lambda x: x.get("menu_order", 0))
-        out.append({"id": m["id"], "name": m["name"], "items": [{"id": it["id"], "title": plain(it["title"]["rendered"]), "url": it.get("url"), "order": it.get("menu_order")} for it in items]})
+        mine = [it for it in items if m["id"] in (it.get("menus") if isinstance(it.get("menus"), list) else [it.get("menus")])]
+        mine.sort(key=lambda x: x.get("menu_order", 0))
+        out.append({"id": m["id"], "name": m["name"], "items": [{"id": it["id"], "title": plain(it["title"]["rendered"]), "url": it.get("url"), "order": it.get("menu_order")} for it in mine]})
     return out
 
 
@@ -109,6 +124,7 @@ async def main():
         if mode == "--rollback":
             state = json.loads(STATE.read_text()) if STATE.exists() else []
             for s in state:
+                await asyncio.sleep(PAUSE)
                 r = await rest(ctx, "delete", f"{BASE}/wp-json/wp/v2/menu-items/{s['item_id']}?force=true", headers=H)
                 print("gelöscht:", s, r.status, flush=True)
             STATE.write_text("[]\n")
@@ -138,6 +154,7 @@ async def main():
                     print(f"Menü {m['id']} enthält den Link bereits, übersprungen.", flush=True)
                     continue
                 order = max([it["order"] or 0 for it in m["items"]] + [0]) + 1
+                await asyncio.sleep(PAUSE)
                 r = await rest(ctx, "post", f"{BASE}/wp-json/wp/v2/menu-items", headers=H,
                                data={"title": LABEL, "url": URL, "menus": m["id"], "type": "custom",
                                      "object": "custom", "status": "publish", "menu_order": order, "parent": 0})
