@@ -60,3 +60,8 @@ Lokale Vorschau: `cd karriere && python3 -m http.server 8080` → <http://localh
 - **Bewerbungs-E-Mail**: aktuell `info@provision-infra.de` (aus dem Impressum). Bei Bedarf auf eine
   eigene Adresse wie `bewerbung@provision-infra.de` ändern (`mailto:`-Links in `index.html`).
 - **JobPosting-Schema** (JSON-LD im `<head>`): `validThrough`-Datum regelmäßig verlängern.
+
+
+## Team-Zitate
+
+Die Sektion „Das sagt das Team“ (`#team`) ist mit der Klasse `is-draft` und dem Attribut `hidden` ausgeblendet, weil noch keine echten Zitate vorliegen. Zum Aktivieren beide entfernen und die drei Platzhalter in `karriere/index.html` durch echte Zitate ersetzen.

@@ -71,8 +71,10 @@ def build(media_map: dict) -> str:
     ld_block = ld.group(0) if ld else ""
 
     out = []
-    out.append("<!-- ProVision Infra – Karriereseite (Elementor-HTML-Widget). Quelle: Repo provisioninfra/karriere -->")
+    out.append("<!-- ProVision Infra: Karriereseite (Elementor-HTML-Widget) -->")
     out.append(f'<link rel="stylesheet" href="{POPPINS_CSS}">')
+    if "glow-ellipse-5.png" in media_map:  # Hero-Glow ist das LCP-Element: vorladen
+        out.append(f'<link rel="preload" as="image" href="{media_map["glow-ellipse-5.png"]}">')
     out.append("<style>\n" + css + "\n</style>")
     out.append(ld_block)
     out.append(body.strip())

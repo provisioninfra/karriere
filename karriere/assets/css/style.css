@@ -214,11 +214,10 @@ button.menu-toggle:hover,button.menu-toggle:focus{color:var(--c-yellow);backgrou
 .stat-google{display:flex;align-items:center;width:300px;gap:14px;}
 .stat-google__logo{width:52px;height:52px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;flex:0 0 52px;}
 .stat-google__logo img{width:30px;height:auto;}
-.stat-google__rating{display:flex;align-items:center;gap:8px;}
+.stat-google__rating{display:flex;align-items:center;gap:8px;white-space:nowrap;}
 .stat-google__rating svg{width:25px;height:25px;fill:var(--c-yellow);}
 .stat-google__num{font-size:35px;font-weight:600;color:#fff;line-height:1;}
 .stat-google__suffix{font-size:18px;font-weight:600;display:inline-flex;align-items:center;margin-left:6px;white-space:nowrap;}
-.stat-google__rating{white-space:nowrap;}
 .stat-google__label{font-size:18px;line-height:1.64em;}
 .counter{display:flex;flex-direction:row-reverse;align-items:center;gap:20px;max-width:300px;margin-right:35px;transition:transform .3s ease;}
 .counter:hover{transform:scale(1.05);}
@@ -340,6 +339,8 @@ button.menu-toggle:hover,button.menu-toggle:focus{color:var(--c-yellow);backgrou
 .benefit .ico{flex:0 0 44px;width:44px;height:44px;border-radius:12px;}
 
 /* ---------- Testimonial Carousel (Nested Carousel Original) ---------- */
+/* Sektion bleibt ausgeblendet, bis echte Team-Zitate eingetragen sind (Klasse is-draft im HTML entfernen). */
+.section.is-draft{display:none;}
 .testi-head{display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:40px;}
 .testi-head .h-lg b{font-weight:700;}
 .carousel{position:relative;max-width:1700px;margin:0 auto;padding:50px 0 84px;}
@@ -691,9 +692,9 @@ button.faq__header:hover{background:var(--c-glass-3);}
   .h-xs{font-size:18.8px;line-height:1.2em;}
   body{font-size:14px;line-height:1.44em;}
   .card-row{flex-direction:column;gap:11px;}
-  .glass-card{flex:0 0 auto;padding:15px 10px;gap:11px;}
+  .glass-card{flex:0 0 auto;padding:16px 14px;gap:12px;}
   .glass-card__icon,.glass-card__icon svg{width:40px;height:40px;flex-basis:40px;}
-  .glass-card p{font-size:12px;line-height:1.44em;}
+  .glass-card p{font-size:13px;line-height:1.5em;}
   .feature-grid{gap:16px;}
   .feature-card{padding:20px 18px;gap:14px;background:rgba(0,13,48,.55);}
   .feature-card__body{gap:10px;}
@@ -730,10 +731,13 @@ button.faq__header:hover{background:var(--c-glass-3);}
   .testi-card__text{font-size:14px;}
   .filter{gap:8px;}
   .filter button{font-size:12px;padding:8px 14px;}
-  .job__head{padding:20px;gap:14px;flex-wrap:wrap;}
+  .job__head{padding:18px 18px 20px;gap:12px 14px;flex-wrap:wrap;}
+  .job__icon{order:1;flex-basis:48px;}
   .job__icon .ico{width:48px;height:48px;}
-  .job__title{font-size:17px;}
-  .job__toggle{flex-basis:40px;width:40px;height:40px;}
+  .job__toggle{order:2;margin-left:auto;flex-basis:40px;width:40px;height:40px;}
+  .job__main{order:3;flex-basis:100%;gap:10px;}
+  .job__title{font-size:17px;line-height:1.3em;}
+  .job__meta span{font-size:12px;}
   .job__content{padding:0 20px 20px;}
   .job__footer{flex-direction:column;align-items:flex-start;}
   .timeline{display:none;}
