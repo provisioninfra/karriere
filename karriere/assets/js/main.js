@@ -88,7 +88,7 @@
     dropdown.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', close); });
     document.addEventListener('click', function (e) {
       if (!dropdown.classList.contains('is-open')) return;
-      if (!e.target.closest('.site-header')) close();
+      if (!e.target.closest('.pk-header')) close();
     });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
     window.addEventListener('resize', function () { if (!isMobile()) close(); });

@@ -158,7 +158,7 @@ async def main():
                 f"{BASE}/wp-json/wp/v2/pages", headers=H,
                 data={"title": "Karriere", "slug": "karriere", "status": "draft",
                       "template": "elementor_canvas", "content": "",
-                      "excerpt": "Karriere bei ProVision Infra: Servicetechniker, IT-Projekttechniker und Kundenberater (m/w/d)."},
+                      "excerpt": "Karriere bei ProVision Infra: Servicetechniker, IT-Projekttechniker, Kundenberater und Büro- und Dispositionskraft (m/w/d)."},
             )
             if r.status not in (200, 201):
                 sys.exit(f"Seite konnte nicht angelegt werden: {r.status} {await r.text()}")
