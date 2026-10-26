@@ -65,3 +65,17 @@ Lokale Vorschau: `cd karriere && python3 -m http.server 8080` → <http://localh
 ## Team-Zitate
 
 Die Sektion „Das sagt das Team“ (`#team`) ist mit der Klasse `is-draft` und dem Attribut `hidden` ausgeblendet, weil noch keine echten Zitate vorliegen. Zum Aktivieren beide entfernen und die drei Platzhalter in `karriere/index.html` durch echte Zitate ersetzen.
+
+
+## Header-Menü der Hauptseite
+
+`tools/wp_menu_karriere.py` pflegt den Reiter „Komm in unser Team“ in den WordPress-Menüs der Header
+(Startseite: Menü 6 „Main“, /zutrittssystem: Menü 15 „Secandary Menu“, /kamerasysteme: Menü 17).
+Damit die Leiste auf allen Bildschirmbreiten einzeilig bleibt, sind die weiteren Punkte unter einem
+Aufklappmenü „Mehr“ zusammengefasst (Elementor-Nav-Menu-Widget zeigt Untermenüs als Dropdown).
+
+- `--list` zeigt die Menüs, `--add` legt den Reiter an, `--group` gruppiert, `--ungroup` und `--rollback`
+  nehmen die Änderungen anhand von `tools/wp-menu-backup.json` und `tools/wp-menu-items.json` zurück.
+- Angelegte Einträge: 4558, 4559, 4560 („Komm in unser Team“), 4568 und 4569 („Mehr“).
+- Der Hoster-Cache (Varnish, lange Haltezeit) wird von Menüänderungen nicht geleert; nach Änderungen
+  Server-Cache und WP-Rocket-Cache leeren.
