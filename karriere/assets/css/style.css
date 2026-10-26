@@ -191,7 +191,6 @@ button.menu-toggle:hover,button.menu-toggle:focus{color:var(--c-yellow);backgrou
 .btn--sm .btn__icon,.btn--sm .btn__icon svg{width:34px;height:34px;flex-basis:34px;}
 
 /* ---------- Hero ---------- */
-.hero__eyebrow{font-size:14px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--c-yellow);margin:0 0 18px;}
 .textlink{color:var(--c-yellow);text-decoration:underline;text-underline-offset:3px;}
 .textlink:hover{color:#fff;}
 .hero{
@@ -685,7 +684,6 @@ button.faq__header:hover{background:var(--c-glass-3);}
   button.menu-toggle{display:flex;margin-left:auto;}
   .hero{padding:96px 10px 44px;text-align:center;}
   .hero__inner{padding:0 10px;}
-  .hero__eyebrow{font-size:11px;margin-bottom:12px;}
   .hero__title{font-size:22px;line-height:28px;text-align:center;padding-bottom:18px;max-width:100%;}
   .hero__sub{font-size:13px;line-height:1.75em;text-align:center;padding-bottom:28px;}
   .hero__sub p + p{margin-top:1.3em;}
