@@ -291,18 +291,24 @@
     var blocks = [];
     var desk = document.querySelector('.timeline');
     var mob = document.querySelector('.timeline-mobile');
-    if (desk) blocks.push({ el: desk, dots: desk.querySelectorAll('.timeline__dot'), bar: desk.querySelector('.timeline__progress'), axis: 'x' });
-    if (mob) blocks.push({ el: mob, dots: mob.querySelectorAll('li'), bar: mob, axis: 'y' });
+    var anim = null, totalFrames = 0;
+    if (desk) blocks.push({ el: desk, stage: desk.querySelector('.timeline__stage') || desk, dots: desk.querySelectorAll('.timeline__dot'), bar: desk.querySelector('.timeline__progress'), axis: 'x' });
+    if (mob) blocks.push({ el: mob, stage: mob, dots: mob.querySelectorAll('li'), bar: mob, axis: 'y' });
     if (!blocks.length) return;
     var STEP = 54 / 327, DOT0 = 10 / 327, LINE0 = 44 / 327, LINE_LEN = 20 / 327; // Frames des Originals (327 Frames gesamt)
     function clamp(v) { return Math.max(0, Math.min(1, v)); }
+    function progressOf(el) {
+      var vh = window.innerHeight, r = el.getBoundingClientRect();
+      return prefersReduced ? 1 : clamp((vh - r.top) / (vh + r.height));
+    }
     function render() {
       ticking = false;
-      var vh = window.innerHeight;
       blocks.forEach(function (b) {
         if (!b.el.offsetParent) return;
-        var r = b.el.getBoundingClientRect();
-        var p = prefersReduced ? 1 : clamp((vh - r.top) / (vh + r.height));
+        var p = progressOf(b.stage);
+        if (b.axis === 'x' && anim && totalFrames) {
+          anim.goToAndStop(Math.round(p * (totalFrames - 1)), true);
+        }
         var n = b.dots.length, done = 0;
         for (var i = 0; i < n; i++) {
           var active = p >= DOT0 + STEP * i;
@@ -311,11 +317,10 @@
         }
         if (b.bar) {
           if (b.axis === 'x') {
-            b.bar.style.width = (done / (n - 1) * 80) + '%';
+            b.bar.style.width = (done / (n - 1) * 76.4) + '%'; // Abstand erster bis letzter Punkt: 11,5 % bis 87,9 %
           } else {
             var first = b.dots[0].getBoundingClientRect(), last = b.dots[n - 1].getBoundingClientRect();
-            var span = (last.top - first.top);
-            b.bar.style.setProperty('--tl-progress', Math.round(span * done / (n - 1)) + 'px');
+            b.bar.style.setProperty('--tl-progress', Math.round((last.top - first.top) * done / (n - 1)) + 'px');
           }
         }
       });
@@ -326,6 +331,34 @@
     window.addEventListener('resize', onScroll);
     window.addEventListener('load', render);
     render();
+
+    // Original-Animation der Hauptseite (Lottie, scrollgebunden wie Elementors "bind to scroll").
+    // Player kommt aus der Elementor-Pro-Bibliothek der eigenen Website; ohne Player bleibt die CSS-Rückfallebene.
+    function startLottie() {
+      var holder = desk.querySelector('.timeline__lottie');
+      if (!holder || !window.lottie) return;
+      anim = window.lottie.loadAnimation({
+        container: holder, renderer: 'svg', loop: false, autoplay: false,
+        path: desk.getAttribute('data-lottie'),
+        rendererSettings: { preserveAspectRatio: 'xMidYMid meet', progressiveLoad: true }
+      });
+      anim.addEventListener('DOMLoaded', function () {
+        totalFrames = anim.totalFrames;
+        desk.classList.add('has-lottie');
+        render();
+      });
+      anim.addEventListener('data_failed', function () { anim = null; });
+    }
+    if (desk && desk.getAttribute('data-lottie') && !prefersReduced) {
+      if (window.lottie) { startLottie(); }
+      else {
+        var s = document.createElement('script');
+        s.src = 'https://provision-infra.de/wp-content/plugins/elementor-pro/assets/lib/lottie/lottie.min.js?ver=5.6.6';
+        s.async = true;
+        s.onload = startLottie;
+        document.head.appendChild(s);
+      }
+    }
   }
 
   /* ---------- FAQ ---------- */

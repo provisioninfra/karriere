@@ -87,8 +87,13 @@ async def main():
         print("Bearbeitungsansicht wird geladen ...", flush=True)
         # Yoast-Metabox (Classic-Metabox oder Block-Editor-Sidebar)
         title_sel = "#focus-keyword-input-metabox, #focus-keyword-input-sidebar"
-        await page.wait_for_selector(title_sel, timeout=180000)
+        await page.wait_for_selector(title_sel, state="attached", timeout=180000)
         await page.wait_for_timeout(2000)
+        # Eingeklappte Yoast-Metabox (Classic-Editor) aufklappen und in den Sichtbereich holen
+        await page.evaluate("""() => { const box=document.querySelector('#wpseo_meta'); if (box && box.classList.contains('closed')) { const h=box.querySelector('.handlediv, .postbox-header button'); if (h) h.click(); } }""")
+        await page.wait_for_timeout(800)
+        await page.evaluate("""() => { const el=document.querySelector('#focus-keyword-input-metabox'); if (el) el.scrollIntoView({block:'center'}); }""")
+        await page.wait_for_selector(title_sel, state="visible", timeout=30000)
         # Block-Editor: Willkommens-Dialog schließen
         for sel in ["button[aria-label='Diesen Dialog schließen']", "button[aria-label='Close dialog']", ".components-modal__header button"]:
             try:
