@@ -45,6 +45,12 @@ def build(media_map: dict) -> str:
     if leftover:
         sys.exit(f"Nicht gemappte Bilder im HTML: {sorted(set(leftover))}")
 
+    # Entwurfs-Sektionen (class is-draft, z. B. Team-Zitate ohne Inhalt) nicht ausliefern:
+    # unsichtbarer Platzhaltertext gehört nicht in den Quelltext der Live-Seite.
+    body = re.sub(r'<section class="section is-draft"[^>]*>.*?(?=<!-- =+ )', "", body, flags=re.S)
+    if "is-draft" in body:
+        sys.exit("Entwurfs-Sektion konnte nicht entfernt werden.")
+
     # SVG-Sprite auflösen: jedes <use href="#id"> durch den Symbol-Inhalt ersetzen.
     # Grund: In WordPress/Elementor gehen Sprite-Referenzen verloren (Symbole werden
     # nicht gerendert); eingebettete Pfade funktionieren überall.
