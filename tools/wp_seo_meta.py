@@ -19,7 +19,7 @@ PASS = os.environ.get("WP_PASS")
 PAGE_ID = int(os.environ.get("WP_PAGE_ID", "4408"))
 CHROME = os.environ.get("CHROME_PATH")
 SEO_TITLE = "Karriere bei ProVision Infra: Jobs in Bad Bevensen"
-SEO_DESC = "Jobs bei ProVision Infra in Bad Bevensen: Servicetechniker, IT-Projekttechniker, Vertrieb und Büro (m/w/d) für digitale Schließsysteme und Videoüberwachung. Lebenslauf genügt."
+SEO_DESC = "Jobs in Bad Bevensen bei ProVision Infra: Servicetechniker, IT, Vertrieb, Büro (m/w/d). Digitale Schließsysteme und Videoüberwachung. Lebenslauf genügt."
 FOCUS = "Jobs in Bad Bevensen"
 PAUSE = 20
 
