@@ -1,0 +1,17 @@
+/* Smartphone-Menü der Hauptseite und ihrer Unterseiten (Elementor-Pro-Navigation):
+   Der Sammelpunkt „Mehr“ wird im aufgeklappten Menü nicht angezeigt, seine
+   Unterpunkte erscheinen flach in einer Liste, wie auf der Startseite.
+   Einfügen unter: WordPress → Design → Customizer → „Zusätzliches CSS“.
+   Die Karriereseite hat ein eigenes Menü und ist hiervon nicht betroffen. */
+@media (max-width: 767px) {
+  .elementor-nav-menu--dropdown li.menu-item-has-children > a.elementor-item {
+    display: none !important;
+  }
+  .elementor-nav-menu--dropdown li.menu-item-has-children > ul.sub-menu {
+    display: block !important;
+    position: static !important;
+  }
+  .elementor-nav-menu--dropdown .sub-menu a.elementor-sub-item {
+    padding-left: 20px !important;
+  }
+}

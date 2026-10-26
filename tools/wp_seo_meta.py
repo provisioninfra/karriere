@@ -85,59 +85,75 @@ async def main():
         await asyncio.sleep(PAUSE)
         await page.goto(f"{BASE}/wp-admin/post.php?post={PAGE_ID}&action=edit", wait_until="domcontentloaded")
         print("Bearbeitungsansicht wird geladen ...", flush=True)
-        # Yoast-Metabox (Classic-Metabox oder Block-Editor-Sidebar)
-        title_sel = "#focus-keyword-input-metabox, #focus-keyword-input-sidebar"
-        await page.wait_for_selector(title_sel, state="attached", timeout=180000)
-        await page.wait_for_timeout(2000)
-        # Eingeklappte Yoast-Metabox (Classic-Editor) aufklappen und in den Sichtbereich holen
+        await page.wait_for_selector("#wpseo_meta, #focus-keyword-input-sidebar", state="attached", timeout=180000)
+        await page.wait_for_timeout(3000)
+        # Diagnose: warum ist das Keyphrase-Feld ggf. unsichtbar?
+        diag = await page.evaluate("""() => {
+            const out = {};
+            const box = document.querySelector('#wpseo_meta');
+            out.box = box ? {cls: box.className, display: getComputedStyle(box).display} : null;
+            const hide = document.querySelector('#wpseo_meta-hide');
+            out.screenOption = hide ? hide.checked : null;
+            const el = document.querySelector('#focus-keyword-input-metabox');
+            out.input = !!el;
+            if (el) {
+                const chain = [];
+                for (let n = el; n && n !== document.body; n = n.parentElement) {
+                    const cs = getComputedStyle(n);
+                    if (cs.display === 'none' || cs.visibility === 'hidden' || n.hidden) chain.push((n.id ? '#' + n.id : n.tagName.toLowerCase() + '.' + [...n.classList].slice(0, 3).join('.')) + ' [' + cs.display + '/' + cs.visibility + ']');
+                }
+                out.hiddenBy = chain;
+            }
+            out.hiddenFields = ['yoast_wpseo_focuskw', 'yoast_wpseo_title', 'yoast_wpseo_metadesc'].map(id => [id, !!document.getElementById(id)]);
+            out.store = !!(window.wp && wp.data && wp.data.select && wp.data.select('yoast-seo/editor'));
+            return out;
+        }""")
+        print("Diagnose:", json.dumps(diag, ensure_ascii=False), flush=True)
+        # Metabox über „Ansicht anpassen“ einblenden, falls ausgeblendet
+        if diag.get("screenOption") is False:
+            await page.click("#show-settings-link")
+            await page.wait_for_timeout(600)
+            await page.check("#wpseo_meta-hide")
+            await page.wait_for_timeout(1200)
+            await page.click("#show-settings-link")
+            print("Yoast-Metabox über „Ansicht anpassen“ eingeblendet.", flush=True)
+        # Eingeklappte Metabox aufklappen
         await page.evaluate("""() => { const box=document.querySelector('#wpseo_meta'); if (box && box.classList.contains('closed')) { const h=box.querySelector('.handlediv, .postbox-header button'); if (h) h.click(); } }""")
         await page.wait_for_timeout(800)
-        await page.evaluate("""() => { const el=document.querySelector('#focus-keyword-input-metabox'); if (el) el.scrollIntoView({block:'center'}); }""")
-        await page.wait_for_selector(title_sel, state="visible", timeout=30000)
-        # Block-Editor: Willkommens-Dialog schließen
-        for sel in ["button[aria-label='Diesen Dialog schließen']", "button[aria-label='Close dialog']", ".components-modal__header button"]:
-            try:
-                await page.locator(sel).first.click(timeout=1500)
-            except Exception:
-                pass
-
-        async def fill(selector_ids, value):
-            for sid in selector_ids:
-                el = page.locator(sid).first
-                if await el.count():
-                    await el.scroll_into_view_if_needed()
-                    await el.click()
-                    await page.keyboard.press("Control+A")
-                    await page.keyboard.press("Backspace")
-                    await page.keyboard.type(value, delay=5)
-                    return True
-            return False
-
-        ok1 = await fill(["#focus-keyword-input-metabox", "#focus-keyword-input-sidebar"], FOCUS)
-        # Yoast nutzt für Titel/Beschreibung contenteditable-Felder (Draft.js); bei Bedarf Snippet-Editor öffnen
-        for sel in ["#yoast-snippet-editor-metabox button", "#yoast-snippet-editor-sidebar button", "button:has-text('Snippet bearbeiten')", "button:has-text('Edit snippet')"]:
-            try:
-                await page.locator(sel).first.click(timeout=1500); await page.wait_for_timeout(500); break
-            except Exception:
-                pass
-        ok2 = await fill(["#yoast-google-preview-title-metabox", "#yoast-google-preview-title-sidebar"], SEO_TITLE)
-        ok3 = await fill(["#yoast-google-preview-description-metabox", "#yoast-google-preview-description-sidebar"], SEO_DESC)
-        print("Felder gefüllt:", {"keyphrase": ok1, "titel": ok2, "beschreibung": ok3}, flush=True)
-        if not (ok2 and ok3):
-            await page.screenshot(path="dist/wp-seo-metabox.png", full_page=True)
-            sys.exit("Yoast-Felder nicht gefunden (Screenshot dist/wp-seo-metabox.png).")
-        await page.wait_for_timeout(1000)
-        # Speichern: Classic „Aktualisieren“ (#publish) oder Block-Editor „Aktualisieren“
-        saved = False
-        for sel in ["#publish", "button.editor-post-publish-button__button", "button:has-text('Aktualisieren')", "button:has-text('Update')"]:
-            try:
-                await page.locator(sel).first.click(timeout=2000); saved = True; break
-            except Exception:
-                pass
-        if not saved:
-            sys.exit("Speichern-Button nicht gefunden.")
-        await page.wait_for_timeout(6000)
-        print("gespeichert.", flush=True)
+        # Werte direkt in den Yoast-Store und die versteckten Formularfelder schreiben
+        res = await page.evaluate("""([focus, title, desc]) => {
+            const out = {};
+            try {
+                const d = wp.data.dispatch('yoast-seo/editor');
+                if (d.setFocusKeyword) { d.setFocusKeyword(focus); out.focusStore = true; }
+                if (d.updateData) { d.updateData({ title: title, description: desc }); out.dataStore = true; }
+            } catch (e) { out.storeError = String(e).slice(0, 120); }
+            const set = (id, v) => { const el = document.getElementById(id); if (!el) return false; el.value = v; el.dispatchEvent(new Event('input', {bubbles: true})); el.dispatchEvent(new Event('change', {bubbles: true})); return true; };
+            out.hidden = [set('yoast_wpseo_focuskw', focus), set('yoast_wpseo_title', title), set('yoast_wpseo_metadesc', desc)];
+            return out;
+        }""", [FOCUS, SEO_TITLE, SEO_DESC])
+        print("Store/Felder:", res, flush=True)
+        await page.wait_for_timeout(1500)
+        check = await page.evaluate("""() => ['yoast_wpseo_focuskw', 'yoast_wpseo_title', 'yoast_wpseo_metadesc'].map(id => { const el = document.getElementById(id); return el ? el.value : null; })""")
+        print("Formularfelder jetzt:", check, flush=True)
+        if check[1] != SEO_TITLE or check[2] != SEO_DESC:
+            # Erneut setzen, falls ein Store-Abgleich die Felder überschrieben hat
+            await page.evaluate("""([focus, title, desc]) => { const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; }; set('yoast_wpseo_focuskw', focus); set('yoast_wpseo_title', title); set('yoast_wpseo_metadesc', desc); }""", [FOCUS, SEO_TITLE, SEO_DESC])
+            check = await page.evaluate("""() => ['yoast_wpseo_focuskw', 'yoast_wpseo_title', 'yoast_wpseo_metadesc'].map(id => { const el = document.getElementById(id); return el ? el.value : null; })""")
+            print("Formularfelder (2. Versuch):", check, flush=True)
+            if check[1] != SEO_TITLE or check[2] != SEO_DESC:
+                await page.screenshot(path="dist/wp-seo-metabox.png", full_page=True)
+                sys.exit("Yoast-Formularfelder konnten nicht gesetzt werden (Screenshot dist/wp-seo-metabox.png).")
+        # Speichern: „Aktualisieren“ der klassischen Bearbeitungsansicht
+        status_before = await page.evaluate("() => { const el = document.querySelector('#original_post_status'); return el ? el.value : null; }")
+        print("Status vor dem Speichern:", status_before, flush=True)
+        btn = page.locator("#publish").first
+        if not await btn.count():
+            sys.exit("Speichern-Button (#publish) nicht gefunden.")
+        async with page.expect_navigation(wait_until="domcontentloaded", timeout=120000):
+            await btn.click()
+        await page.wait_for_timeout(3000)
+        print("gespeichert:", page.url.split("?")[-1], flush=True)
 
         # 3) Kontrolle
         await asyncio.sleep(PAUSE)

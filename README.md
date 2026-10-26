@@ -79,3 +79,13 @@ Aufklappmenü „Mehr“ zusammengefasst (Elementor-Nav-Menu-Widget zeigt Unterm
 - Angelegte Einträge: 4558, 4559, 4560 („Komm in unser Team“), 4568 und 4569 („Mehr“).
 - Der Hoster-Cache (Varnish, lange Haltezeit) wird von Menüänderungen nicht geleert; nach Änderungen
   Server-Cache und WP-Rocket-Cache leeren.
+- Smartphone-Ansicht: Damit das aufgeklappte Menü auf allen Seiten wie auf der Startseite alle Punkte
+  flach zeigt (ohne „Mehr“), gehört `tools/customizer-mobile-menu.css` in den Customizer unter
+  Design → Customizer → „Zusätzliches CSS“. Die Karriereseite hat ein eigenes Menü und bleibt unverändert.
+
+
+## SEO-Metadaten
+
+`tools/wp_seo_meta.py` setzt das Beitragsbild (Mediathek-Eintrag `og-karriere`) per REST und die
+Yoast-Felder (SEO-Titel, Meta-Beschreibung, Fokus-Keyphrase) über die Bearbeitungsansicht der Seite.
+Zugangsdaten nur über `WP_USER` / `WP_PASS`; die Werte stehen oben im Skript.

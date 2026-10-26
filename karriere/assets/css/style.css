@@ -681,7 +681,7 @@ button.faq__header:hover{background:var(--c-glass-3);}
   .pk-header__logo img{width:54%;max-width:none;}
   .pk-header__nav{width:22%;align-items:center;}
   .nav-menu{display:none;}
-  .nav-dropdown{display:grid;top:100%;left:0;right:0;}
+  .nav-dropdown{display:grid;top:100%;left:-6px;right:-6px;}
   button.menu-toggle{display:flex;margin-left:auto;}
   .hero{padding:96px 10px 44px;text-align:center;}
   .hero__inner{padding:0 10px;}
