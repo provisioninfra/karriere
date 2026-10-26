@@ -35,8 +35,9 @@ URL = os.environ.get("MENU_URL", f"{BASE}/karriere/")
 GROUP_LABEL = os.environ.get("GROUP_LABEL", "Mehr")
 GROUP_URL = "#mehr"  # nicht existierender Anker: kein Sprung, kein Scrollen
 GROUP_PLAN = {
-    "Startseite": {"inline": ["Mit digitalen Schlüsseln Kosten sparen", "So arbeiten wir zusammen", "Komm in unser Team"],
-                   "dropdown": ["Über uns", "FAQ"]},
+    # Startseite: bei 768px (Tablet hochkant) passen nur zwei Punkte plus „Mehr“ in die Leiste
+    "Startseite": {"inline": ["Mit digitalen Schlüsseln Kosten sparen", "Komm in unser Team"],
+                   "dropdown": ["So arbeiten wir zusammen", "Über uns", "FAQ"]},
     "Kamerasysteme": {"inline": ["Durch Videoüberwachung teure Schäden verhindern", "Komm in unser Team"],
                       "dropdown": ["So arbeiten wir zusammen", "Über uns", "FAQ"]},
 }
