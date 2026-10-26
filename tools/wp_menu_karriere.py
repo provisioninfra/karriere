@@ -9,6 +9,9 @@ Modi:
   --add       Menüpunkt in die Zielmenüs einfügen (idempotent), IDs nach
               dist/wp-menu-items.json schreiben
   --rollback  die in dist/wp-menu-items.json gespeicherten Einträge löschen
+  --group     Header-Menüs ordnen: erste Punkte nebeneinander, Rest als
+              Aufklappmenü „Mehr“ (Sicherung nach dist/wp-menu-backup.json)
+  --ungroup   Gruppierung anhand der Sicherung wieder aufheben
 
 Zugangsdaten nur über WP_USER / WP_PASS (werden nicht geloggt).
 Optional: WP_URL, CHROME_PATH, MENU_LABEL, MENU_URL.
@@ -28,6 +31,17 @@ LABEL = os.environ.get("MENU_LABEL", "Komm in unser Team")
 URL = os.environ.get("MENU_URL", f"{BASE}/karriere/")
 
 # Zielmenüs werden über vorhandene Einträge erkannt (Titel, wie sie im Header stehen)
+# Gruppierung (--group): welche Punkte bleiben nebeneinander, welche wandern ins Aufklappmenü
+GROUP_LABEL = os.environ.get("GROUP_LABEL", "Mehr")
+GROUP_URL = "#mehr"  # nicht existierender Anker: kein Sprung, kein Scrollen
+GROUP_PLAN = {
+    "Startseite": {"inline": ["Mit digitalen Schlüsseln Kosten sparen", "So arbeiten wir zusammen", "Komm in unser Team"],
+                   "dropdown": ["Über uns", "FAQ"]},
+    "Kamerasysteme": {"inline": ["Durch Videoüberwachung teure Schäden verhindern", "Komm in unser Team"],
+                      "dropdown": ["So arbeiten wir zusammen", "Über uns", "FAQ"]},
+}
+BACKUP = DIST / "wp-menu-backup.json"
+
 TARGET_HINTS = {
     "Startseite": ["Mit digitalen Schlüsseln Kosten sparen"],
     "Zutrittssystem": ["Zur Startseite"],
@@ -108,7 +122,7 @@ async def load_menus(ctx, H):
     for m in menus:
         mine = [it for it in items if m["id"] in (it.get("menus") if isinstance(it.get("menus"), list) else [it.get("menus")])]
         mine.sort(key=lambda x: x.get("menu_order", 0))
-        out.append({"id": m["id"], "name": m["name"], "items": [{"id": it["id"], "title": plain(it["title"]["rendered"]), "url": it.get("url"), "order": it.get("menu_order")} for it in mine]})
+        out.append({"id": m["id"], "name": m["name"], "items": [{"id": it["id"], "title": plain(it["title"]["rendered"]), "url": it.get("url"), "order": it.get("menu_order"), "parent": it.get("parent", 0)} for it in mine]})
     return out
 
 
@@ -150,6 +164,72 @@ async def main():
             await browser.close()
             return
 
+        if mode == "--group":
+            backup = json.loads(BACKUP.read_text()) if BACKUP.exists() else {}
+            for label, plan in GROUP_PLAN.items():
+                m = targets.get(label)
+                if not m:
+                    sys.exit(f"Abbruch: Zielmenü für {label} nicht erkannt")
+                by_title = {it["title"]: it for it in m["items"]}
+                missing = [t for t in plan["inline"] + plan["dropdown"] if t not in by_title]
+                if missing:
+                    sys.exit(f"Abbruch: Einträge fehlen in Menü {m['id']}: {missing}")
+                if str(m["id"]) not in backup:
+                    backup[str(m["id"])] = [{"id": it["id"], "parent": it["parent"], "order": it["order"]} for it in m["items"]]
+                    BACKUP.write_text(json.dumps(backup, indent=2, ensure_ascii=False) + "\n")
+                parent = by_title.get(GROUP_LABEL)
+                if parent:
+                    print(f"Menü {m['id']}: „{GROUP_LABEL}“ existiert bereits (ID {parent['id']}), wird wiederverwendet.", flush=True)
+                    parent_id = parent["id"]
+                else:
+                    await asyncio.sleep(PAUSE)
+                    r = await rest(ctx, "post", f"{BASE}/wp-json/wp/v2/menu-items", headers=H,
+                                   data={"title": GROUP_LABEL, "url": GROUP_URL, "menus": m["id"], "type": "custom", "object": "custom",
+                                         "status": "publish", "menu_order": len(plan["inline"]) + 1, "parent": 0})
+                    if r.status not in (200, 201):
+                        sys.exit(f"„{GROUP_LABEL}“ konnte nicht angelegt werden (Menü {m['id']}): {r.status} {(await r.text())[:300]}")
+                    parent_id = (await r.json())["id"]
+                    print(f"Menü {m['id']}: Aufklappmenü „{GROUP_LABEL}“ angelegt (ID {parent_id})", flush=True)
+                order = 1
+                updates = []
+                for t in plan["inline"]:
+                    updates.append((by_title[t], 0, order)); order += 1
+                order += 1  # Platz für „Mehr“
+                for t in plan["dropdown"]:
+                    updates.append((by_title[t], parent_id, order)); order += 1
+                for it, par, order_ in updates:
+                    if it["parent"] == par and it["order"] == order_:
+                        continue
+                    await asyncio.sleep(PAUSE)
+                    r = await rest(ctx, "post", f"{BASE}/wp-json/wp/v2/menu-items/{it['id']}", headers=H, data={"parent": par, "menu_order": order_})
+                    if r.status != 200:
+                        sys.exit(f"Eintrag {it['id']} „{it['title']}“ konnte nicht geändert werden: {r.status} {(await r.text())[:300]}")
+                    print(f"  „{it['title']}“ -> {'unter „' + GROUP_LABEL + '“' if par else 'oben'}, Position {order_}", flush=True)
+            print("Gruppierung abgeschlossen.", flush=True)
+            await browser.close()
+            return
+
+        if mode == "--ungroup":
+            backup = json.loads(BACKUP.read_text()) if BACKUP.exists() else {}
+            if not backup:
+                sys.exit("Keine Sicherung vorhanden.")
+            for m in menus:
+                saved = backup.get(str(m["id"]))
+                if not saved:
+                    continue
+                for it in m["items"]:
+                    if it["title"] == GROUP_LABEL and it["url"] == GROUP_URL:
+                        await asyncio.sleep(PAUSE)
+                        r = await rest(ctx, "delete", f"{BASE}/wp-json/wp/v2/menu-items/{it['id']}?force=true", headers=H)
+                        print(f"Menü {m['id']}: „{GROUP_LABEL}“ gelöscht ({r.status})", flush=True)
+                for sv in saved:
+                    await asyncio.sleep(PAUSE)
+                    r = await rest(ctx, "post", f"{BASE}/wp-json/wp/v2/menu-items/{sv['id']}", headers=H, data={"parent": sv["parent"], "menu_order": sv["order"]})
+                    print(f"  Eintrag {sv['id']} zurückgesetzt ({r.status})", flush=True)
+            BACKUP.write_text("{}\n")
+            await browser.close()
+            return
+
         if mode == "--add":
             missing = [k for k in TARGET_HINTS if k not in targets]
             if missing:
@@ -176,7 +256,7 @@ async def main():
                 print(f"angelegt: Menü {m['id']} „{m['name']}“ -> Eintrag {it['id']} „{LABEL}“", flush=True)
             await browser.close()
             return
-        sys.exit("Unbekannter Modus. --list | --add | --rollback")
+        sys.exit("Unbekannter Modus. --list | --add | --rollback | --group | --ungroup")
 
 
 if __name__ == "__main__":
