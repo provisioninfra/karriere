@@ -19,6 +19,75 @@ SRC = ROOT / "karriere"
 POPPINS_CSS = "https://provision-infra.de/wp-content/uploads/elementor/google-fonts/css/poppins.css"
 
 
+
+# --- Selektor-Präfix: Alle eigenen Regeln bekommen den Wrapper "#pk-karriere" vorangestellt.
+# Grund: WordPress/Elementor laden eigene Stylesheets (z. B. Kit-Regel ".elementor-kit-8 a{color:#FBC91B}"),
+# deren Spezifität Klassenselektoren der Seite schlägt. Mit ID-Präfix gewinnen die Seitenregeln immer;
+# die Rangfolge der eigenen Regeln untereinander bleibt erhalten (alle +1 ID).
+_KEEP = re.compile(r"^(:root|html|body|\*)")
+
+
+def _split_selectors(sel: str) -> list:
+    parts, buf, depth, quote = [], "", 0, None
+    for ch in sel:
+        if quote:
+            buf += ch
+            if ch == quote:
+                quote = None
+            continue
+        if ch in "\"'":
+            quote = ch
+        elif ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth -= 1
+        if ch == "," and depth == 0:
+            parts.append(buf)
+            buf = ""
+        else:
+            buf += ch
+    parts.append(buf)
+    return [p.strip() for p in parts if p.strip()]
+
+
+def prefix_selectors(css: str, prefix: str) -> str:
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+    out, i, n = [], 0, len(css)
+    while i < n:
+        j = css.find("{", i)
+        if j == -1:
+            out.append(css[i:])
+            break
+        head = css[i:j]
+        k = head.rfind(";")  # blocklose Anweisungen (z. B. @import ...;) unverändert
+        if k != -1:
+            out.append(head[: k + 1])
+            head = head[k + 1:]
+        depth, m = 0, j
+        while m < n:
+            if css[m] == "{":
+                depth += 1
+            elif css[m] == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            m += 1
+        inner = css[j + 1:m]
+        sel = head.strip()
+        lead = head[: len(head) - len(head.lstrip())]
+        if sel.startswith("@"):
+            name = sel.split("(")[0].split()[0].lower()
+            if name in ("@media", "@supports", "@container", "@layer", "@document"):
+                out.append(head + "{" + prefix_selectors(inner, prefix) + "}")
+            else:  # @font-face, @keyframes, @page: unverändert
+                out.append(head + "{" + inner + "}")
+        else:
+            new_sel = ",".join(s if _KEEP.match(s) else f"{prefix} {s}" for s in _split_selectors(sel))
+            out.append(lead + new_sel + "{" + inner + "}")
+        i = m + 1
+    return "".join(out)
+
+
 def build(media_map: dict) -> str:
     html = (SRC / "index.html").read_text(encoding="utf-8")
     css = (SRC / "assets/css/style.css").read_text(encoding="utf-8")
@@ -34,6 +103,9 @@ def build(media_map: dict) -> str:
     leftover = re.findall(r'url\("\.\./img/([^"]+)"\)', css)
     if leftover:
         sys.exit(f"Nicht gemappte Bilder im CSS: {sorted(set(leftover))}")
+    css = prefix_selectors(css, "#pk-karriere")
+    if "#pk-karriere" not in css or "#pk-karriere :root" in css or "#pk-karriere body" in css:
+        sys.exit("Selektor-Präfix fehlgeschlagen.")
 
     # --- HTML: nur den Body-Inhalt übernehmen ---
     m = re.search(r"<body[^>]*>(.*)</body>", html, flags=re.S)
