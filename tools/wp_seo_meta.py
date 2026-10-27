@@ -144,16 +144,34 @@ async def main():
             if check[1] != SEO_TITLE or check[2] != SEO_DESC:
                 await page.screenshot(path="dist/wp-seo-metabox.png", full_page=True)
                 sys.exit("Yoast-Formularfelder konnten nicht gesetzt werden (Screenshot dist/wp-seo-metabox.png).")
-        # Speichern: „Aktualisieren“ der klassischen Bearbeitungsansicht
+        # Speichern. Block-Editor: Metabox-Felder über den eigenen Metabox-Request des Editors
+        # speichern (derselbe Weg wie beim Klick auf „Aktualisieren“, aber ohne den Seiteninhalt
+        # erneut zu übertragen). Klassischer Editor: „Aktualisieren“ (#publish).
         status_before = await page.evaluate("() => { const el = document.querySelector('#original_post_status'); return el ? el.value : null; }")
         print("Status vor dem Speichern:", status_before, flush=True)
-        btn = page.locator("#publish").first
-        if not await btn.count():
-            sys.exit("Speichern-Button (#publish) nicht gefunden.")
-        async with page.expect_navigation(wait_until="domcontentloaded", timeout=120000):
-            await btn.click()
-        await page.wait_for_timeout(3000)
-        print("gespeichert:", page.url.split("?")[-1], flush=True)
+        has_block_editor = await page.evaluate("() => !!(window.wp && wp.data && wp.data.select('core/edit-post') && typeof wp.data.dispatch('core/edit-post').requestMetaBoxUpdates === 'function')")
+        if has_block_editor:
+            result = await page.evaluate("""async () => {
+                try {
+                    await wp.data.dispatch('core/edit-post').requestMetaBoxUpdates();
+                    for (let i = 0; i < 90; i++) {
+                        if (!wp.data.select('core/edit-post').isSavingMetaBoxes()) return 'gespeichert';
+                        await new Promise(r => setTimeout(r, 1000));
+                    }
+                    return 'timeout';
+                } catch (e) { return 'Fehler: ' + String(e).slice(0, 160); }
+            }""")
+            print("Metabox-Speicherung (Block-Editor):", result, flush=True)
+            if result != 'gespeichert':
+                sys.exit("Speichern der Yoast-Felder fehlgeschlagen.")
+        else:
+            btn = page.locator("#publish").first
+            if not await btn.count():
+                sys.exit("Speichern-Button (#publish) nicht gefunden.")
+            async with page.expect_navigation(wait_until="domcontentloaded", timeout=120000):
+                await btn.click()
+            await page.wait_for_timeout(3000)
+            print("gespeichert (klassischer Editor):", page.url.split("?")[-1], flush=True)
 
         # 3) Kontrolle
         await asyncio.sleep(PAUSE)
